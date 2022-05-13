@@ -69,6 +69,19 @@ require('packer').startup(function(use)
 	-- Vim Surround
 	use 'tpope/vim-surround'
 
+	-- Neogit
+	use {
+		'TimUntersberger/neogit',
+		requires = 'nvim-lua/plenary.nvim',
+		config = function()
+			require('neogit').setup({
+				disable_commit_confirmation = true,
+				use_magit_keybindings = true,
+			})
+			vim.api.nvim_set_keymap('n', '<leader>gs', '<cmd>Neogit<cr>', { silent = true })
+		end
+	}
+
 	-- Lightline
 	use {
 		'itchyny/lightline.vim',
