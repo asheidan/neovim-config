@@ -82,6 +82,14 @@ require('packer').startup(function(use)
 		end
 	}
 
+	-- Tagbar
+	use {
+		'preservim/tagbar',
+		config = function()
+			vim.api.nvim_set_keymap('n', '<F4>', '<cmd>TagbarToggle<cr>', { silent = true })
+		end,
+	}
+
 	-- Lightline
 	use {
 		'itchyny/lightline.vim',
