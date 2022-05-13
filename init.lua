@@ -105,7 +105,7 @@ require('packer').startup(function(use)
 	endfunction
 	]])
 	vim.g.lightline = {
-		colorscheme = 'one',
+		colorscheme = 'PaperColor',
 		component_function = {
 			projectname = 'LightLineProjectName',
 		},
@@ -121,9 +121,12 @@ require('packer').startup(function(use)
 	use {
 		'sonph/onehalf',
 		rtp = 'vim',
-		config = function() vim.cmd('colorscheme onehalflight') end,
+		--config = function() vim.cmd('colorscheme onehalflight') end,
 	}
-	use 'NLKNguyen/papercolor-theme'
+	use {
+		'NLKNguyen/papercolor-theme',
+		config = function() vim.cmd('colorscheme PaperColor') end,
+	}
 	use 'morhetz/gruvbox'
 	use 'romgrk/doom-one.vim'
 	use 'tomasr/molokai'
