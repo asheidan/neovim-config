@@ -178,8 +178,10 @@ require('packer').startup(function(use)
 end)
 
 -- Misc mappings
-vim.api.nvim_set_keymap('n', '<F3>', '<cmd>lua vim.opt.number = not vim.opt.number<cr>',
+vim.api.nvim_set_keymap('n', '<F3>', '<cmd>lua vim.opt.number = true ~= vim.opt.number<cr>',
                         { silent = true })
+
+vim.opt.foldmethod = 'marker'
 
 -- Highlight yanked region (:h lua-highlight)
 -- Inspired by https://jdhao.github.io/2020/05/22/highlight_yank_region_nvim/
