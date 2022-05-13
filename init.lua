@@ -137,6 +137,19 @@ require('packer').startup(function(use)
 		config = function() require("which-key").setup() end,
 	}
 
+	-- IndentGuides
+	use {
+		'lukas-reineke/indent-blankline.nvim',
+		config = function()
+			require('indent_blankline').setup({
+				show_current_context = true,
+				show_current_contect_start = true,
+				--show_end_of_line = true,
+			})
+			vim.api.nvim_set_keymap('n', '<leader>ig', '<cmd>IndentBlanklineToggle<cr>', { silent = true })
+		end,
+	}
+
 	-- NvimTree
 	vim.g.nvim_tree_git_hl = 0
 	vim.g.nvim_tree_add_trailing = 1
