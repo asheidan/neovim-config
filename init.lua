@@ -123,6 +123,14 @@ require('packer').startup(function(use)
 		rtp = 'vim',
 		--config = function() vim.cmd('colorscheme onehalflight') end,
 	}
+	vim.g.PaperColor_Theme_Options = {
+		theme = {
+			default = {
+				allow_bold = 0,
+				allow_italic = 0,
+			},
+		},
+	}
 	use {
 		'NLKNguyen/papercolor-theme',
 		config = function() vim.cmd('colorscheme PaperColor') end,
