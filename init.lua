@@ -151,14 +151,6 @@ require('packer').startup(function(use)
 	}
 
 	-- NvimTree
-	vim.g.nvim_tree_git_hl = 0
-	vim.g.nvim_tree_add_trailing = 1
-	vim.g.nvim_tree_show_icons = {
-		git = 0,
-		folders = 0,
-		files = 0,
-		folder_arrows = 1,
-	}
 	use {
 		'kyazdani42/nvim-tree.lua',
 		config = function ()
@@ -167,6 +159,8 @@ require('packer').startup(function(use)
 					enable = false,
 				},
 				renderer = {
+					add_trailing = true,
+					highlight_git = false,
 					indent_markers = {
 						enable = true,
 						icons = {
@@ -176,6 +170,11 @@ require('packer').startup(function(use)
 						},
 					},
 					icons = {
+						show = {
+							file = false,
+							folder = false,
+							folder_arrow = true,
+						},
 						webdev_colors = false,
 					},
 				},
