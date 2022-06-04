@@ -190,7 +190,7 @@ require('packer').startup(function(use)
 end)
 
 -- Misc mappings
-vim.api.nvim_set_keymap('n', '<F3>', '<cmd>lua vim.opt.number = true ~= vim.opt.number<cr>',
+vim.api.nvim_set_keymap('n', '<F3>', '<CMD>set number!<CR>:echo "Line numbers: " . strpart("OffOn", 3* &number, 3)<CR>',
                         { silent = true })
 
 vim.opt.foldmethod = 'marker'
