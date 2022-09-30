@@ -117,6 +117,11 @@ require('packer').startup(function(use)
 		},
 	}
 
+	use {
+		'nvim-treesitter/nvim-treesitter',
+		run = function () require('nvim-treesitter.install').update({ with_sync = true }) end,
+	}
+
 	-- Colorschemes
 	use {
 		'sonph/onehalf',
@@ -190,6 +195,67 @@ require('packer').startup(function(use)
 			vim.api.nvim_set_keymap('n', '<F2>', '<cmd>NvimTreeToggle<cr>', { silent = true })
 		end,
 	}
+
+	-- TODO: Get proper rust support working
+	-- Guide to get lsp working
+	-- https://rsdlt.github.io/posts/rust-nvim-ide-guide-walkthrough-development-debug/
+	--
+	-- Inspirational setup
+	-- https://github.com/AstroNvim/AstroNvim
+
+	-- LSP Configs
+	use {
+		'neovim/nvim-lspconfig',
+		config = function ()
+			require('lspconfig').rust_analyzer.setup({
+				cmd = {"rustup", "run", "stable", "rust-analyzer"},
+				--settings = {
+				--	["rust-analyzer"] = {},
+				--},
+			})
+			vim.api.nvim_set_keymap('n', 'go', '<cmd>lua vim.lsp.buf.hover()<cr>', { silent = true })
+			vim.api.nvim_set_keymap('n', 'gO', '<cmd>lua vim.lsp.buf.code_action()<cr>', { silent = true })
+			vim.api.nvim_set_keymap('n', 'gl', '<cmd>lua vim.lsp.buf.implementation()<cr>', { silent = true })
+			vim.api.nvim_set_keymap('n', 'gL', '<cmd>lua vim.lsp.buf.references()<cr>', { silent = true })
+		end,
+	}
+
+	-- Completion via Cmp
+	use {
+		'hrsh7th/nvim-cmp',
+		requires = { 'hrsh7th/cmp-nvim-lsp' },
+		config = function ()
+			local cmp = require('cmp')
+
+			local fallback_or = function (not_fallback)
+				local executor = function (fallback)
+					if cmp.visible() then
+						not_fallback()
+					else
+						fallback()
+					end
+				end
+				return executor
+			end
+
+			cmp.setup({
+				mapping = cmp.mapping.preset.insert({
+					['<Tab>'] = cmp.mapping.confirm({ select = true }),
+					['<C-n>'] = fallback_or(cmp.select_next_item),
+					['<C-p>'] = fallback_or(cmp.select_prev_item),
+				}),
+				window = {
+					--completion = cmp.config.window.bordered(),
+					--documentation = cmp.config.window.bordered(),
+				},
+				sources = cmp.config.sources({
+					{ name = 'nvim_lsp' },
+				}),
+			})
+		end,
+	}
+
+
 	-- Automatically set up your configuration after cloning packer.nvim
 	-- Put this at the end after all plugins
 	if packer_bootstrap then
