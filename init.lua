@@ -212,3 +212,14 @@ vim.cmd [[
 autocmd FileType markdown setlocal foldexpr=MarkdownFold()
 autocmd FileType markdown setlocal foldmethod=expr
 ]]
+
+-- Better fold text
+-- https://essais.co/better-folding-in-neovim/
+-- http://gregsexton.org/2011/03/27/improving-the-text-displayed-in-a-vim-fold.html
+vim.cmd [[
+function! CustomFoldText()
+	let text = getline(v:foldstart) . "..."
+
+	return text
+endfunction
+]]
