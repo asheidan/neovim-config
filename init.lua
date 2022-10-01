@@ -44,6 +44,13 @@ require('packer').startup(function(use)
 		requires = { 'nvim-lua/plenary.nvim' },
 		config = function()
 			require('telescope').setup({
+				defaults = {
+					layout_strategy = "vertical",
+					layout_config = {
+						height = 0.95,
+						width = 0.95,
+					},
+				},
 				extensions = {
 					project = {
 						base_dirs = {
@@ -82,13 +89,13 @@ require('packer').startup(function(use)
 		end
 	}
 
-	-- Tagbar
-	use {
-		'preservim/tagbar',
-		config = function()
-			vim.api.nvim_set_keymap('n', '<F4>', '<cmd>TagbarToggle<cr>', { silent = true })
-		end,
-	}
+	-- Tagbar ( Replaced by Aerial.vim
+	--use {
+	--	'preservim/tagbar',
+	--	config = function()
+	--		vim.api.nvim_set_keymap('n', '<F4>', '<cmd>TagbarToggle<cr>', { silent = true })
+	--	end,
+	--}
 
 	-- Lightline
 	use {
@@ -177,17 +184,24 @@ require('packer').startup(function(use)
 					indent_markers = {
 						enable = true,
 						icons = {
-							edge = "├ ",
-							corner = "└ ",
-							none = "  ",
+							edge = "│",
+							item = "├",
+							corner = "└",
+							none = " ",
 						},
 					},
 					icons = {
 						show = {
 							file = false,
 							folder = false,
-							folder_arrow = true,
+							folder_arrow = false,
 						},
+						--glyphs = {
+						--	folder = {
+						--		arrow_closed = ">",
+						--		arrow_open = "v",
+						--	},
+						--},
 						webdev_colors = false,
 					},
 				},
@@ -215,8 +229,10 @@ require('packer').startup(function(use)
 			})
 			vim.api.nvim_set_keymap('n', 'go', '<cmd>lua vim.lsp.buf.hover()<cr>', { silent = true })
 			vim.api.nvim_set_keymap('n', 'gO', '<cmd>lua vim.lsp.buf.code_action()<cr>', { silent = true })
-			vim.api.nvim_set_keymap('n', 'gl', '<cmd>lua vim.lsp.buf.implementation()<cr>', { silent = true })
-			vim.api.nvim_set_keymap('n', 'gL', '<cmd>lua vim.lsp.buf.references()<cr>', { silent = true })
+			vim.api.nvim_set_keymap('n', 'gl', '<cmd>Telescope lsp_implementations<cr>', { silent = true })
+			vim.api.nvim_set_keymap('n', 'gL', '<cmd>Telescope lsp_references<cr>', { silent = true })
+			vim.api.nvim_set_keymap('n', 'gd', '<cmd>Telescope lsp_definitions<cr>', { silent = true })
+			vim.api.nvim_set_keymap('n', 'gD', '<cmd>Telescope lsp_type_definitions<cr>', { silent = true })
 		end,
 	}
 
@@ -255,6 +271,36 @@ require('packer').startup(function(use)
 		end,
 	}
 
+	-- File structure / overview via Aerial
+	use {
+		'stevearc/aerial.nvim',
+		config = function ()
+			local aerial = require('aerial')
+			aerial.setup({
+				backends = { "lsp", "treesitter", "markdown" },
+				layout = {
+					default_direction = "prefer_right",
+					placement = "edge",
+				},
+				attach_mode = "window",
+				show_guides = true,
+				guides = {
+					mid_item = "├ ",
+					last_item = "└ ",
+					nested_top = "│ ",
+					whitespace = "  ",
+				},
+			})
+
+			-- This might have to be moved to existing on_attach in case such exists
+			require('lspconfig').vimls.setup({ on_attach = aerial.on_attach })
+
+			vim.api.nvim_set_keymap('n', '<F4>', '<cmd>AerialToggle!<cr>', { silent = true })
+			vim.api.nvim_set_keymap('n', '<leader>mo', '<cmd>Telescope aerial<cr>', { silent = true })
+
+			require('telescope').load_extension('aerial')
+		end,
+	}
 
 	-- Automatically set up your configuration after cloning packer.nvim
 	-- Put this at the end after all plugins
