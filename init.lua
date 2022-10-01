@@ -229,8 +229,10 @@ require('packer').startup(function(use)
 			})
 			vim.api.nvim_set_keymap('n', 'go', '<cmd>lua vim.lsp.buf.hover()<cr>', { silent = true })
 			vim.api.nvim_set_keymap('n', 'gO', '<cmd>lua vim.lsp.buf.code_action()<cr>', { silent = true })
-			vim.api.nvim_set_keymap('n', 'gl', '<cmd>lua vim.lsp.buf.implementation()<cr>', { silent = true })
-			vim.api.nvim_set_keymap('n', 'gL', '<cmd>lua vim.lsp.buf.references()<cr>', { silent = true })
+			vim.api.nvim_set_keymap('n', 'gl', '<cmd>Telescope lsp_implementations<cr>', { silent = true })
+			vim.api.nvim_set_keymap('n', 'gL', '<cmd>Telescope lsp_references<cr>', { silent = true })
+			vim.api.nvim_set_keymap('n', 'gd', '<cmd>Telescope lsp_definitions<cr>', { silent = true })
+			vim.api.nvim_set_keymap('n', 'gD', '<cmd>Telescope lsp_type_definitions<cr>', { silent = true })
 		end,
 	}
 
