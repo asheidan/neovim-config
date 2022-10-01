@@ -184,17 +184,24 @@ require('packer').startup(function(use)
 					indent_markers = {
 						enable = true,
 						icons = {
-							edge = "├ ",
-							corner = "└ ",
-							none = "  ",
+							edge = "│",
+							item = "├",
+							corner = "└",
+							none = " ",
 						},
 					},
 					icons = {
 						show = {
 							file = false,
 							folder = false,
-							folder_arrow = true,
+							folder_arrow = false,
 						},
+						--glyphs = {
+						--	folder = {
+						--		arrow_closed = ">",
+						--		arrow_open = "v",
+						--	},
+						--},
 						webdev_colors = false,
 					},
 				},
