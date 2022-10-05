@@ -40,37 +40,39 @@ require('packer').startup(function(use)
 
 	-- Telescope
 	use({
-		'nvim-telescope/telescope.nvim',
-		requires = { 'nvim-lua/plenary.nvim' },
-		config = function()
-			require('telescope').setup({
-				defaults = {
-					layout_strategy = "vertical",
-					layout_config = {
-						height = 0.95,
-						width = 0.95,
-					},
-				},
-				extensions = {
-					project = {
-						base_dirs = {
-							'~/Documents/Projects',
+		{
+			'nvim-telescope/telescope.nvim',
+			requires = { 'nvim-lua/plenary.nvim' },
+			config = function()
+				require('telescope').setup({
+					defaults = {
+						layout_strategy = "vertical",
+						layout_config = {
+							height = 0.95,
+							width = 0.95,
 						},
 					},
-				},
-			})
-			vim.api.nvim_set_keymap('n', '<leader> ', '<cmd>Telescope find_files<cr>', { silent = true })
-			vim.api.nvim_set_keymap('n', '<leader>bb', '<cmd>Telescope buffers<cr>', { silent = true })
-		end,
-	})
-	use({
-		'nvim-telescope/telescope-project.nvim',
-		after = 'telescope.nvim',
-		requires = { 'nvim-telescope/telescope.nvim' },
-		config = function()
-			require('telescope').load_extension('project')
-			vim.api.nvim_set_keymap('n', '<leader>pp', '<cmd>Telescope project<cr>', { silent = true })
-		end,
+					extensions = {
+						project = {
+							base_dirs = {
+								'~/Documents/Projects',
+							},
+						},
+					},
+				})
+				vim.api.nvim_set_keymap('n', '<leader> ', '<cmd>Telescope find_files<cr>', { silent = true })
+				vim.api.nvim_set_keymap('n', '<leader>bb', '<cmd>Telescope buffers<cr>', { silent = true })
+			end,
+		},
+		{
+			'nvim-telescope/telescope-project.nvim',
+			after = 'telescope.nvim',
+			requires = { 'nvim-telescope/telescope.nvim' },
+			config = function()
+				require('telescope').load_extension('project')
+				vim.api.nvim_set_keymap('n', '<leader>pp', '<cmd>Telescope project<cr>', { silent = true })
+			end,
+		},
 	})
 
 	-- Vim Surround
