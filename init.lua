@@ -239,7 +239,10 @@ require('packer').startup(function(use)
 	-- Completion via Cmp
 	use {
 		'hrsh7th/nvim-cmp',
-		requires = { 'hrsh7th/cmp-nvim-lsp' },
+		requires = {
+			'hrsh7th/cmp-nvim-lsp',
+			{'hrsh7th/cmp-nvim-lsp-signature-help', after = 'nvim-cmp' },
+		},
 		config = function ()
 			local cmp = require('cmp')
 
@@ -266,6 +269,7 @@ require('packer').startup(function(use)
 				},
 				sources = cmp.config.sources({
 					{ name = 'nvim_lsp' },
+					{ name = 'nvim_lsp_signature_help' },
 				}),
 			})
 		end,
