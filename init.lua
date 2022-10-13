@@ -218,21 +218,35 @@ require('packer').startup(function(use)
 	-- https://github.com/AstroNvim/AstroNvim
 
 	-- LSP Configs
+	local on_attach = function (client, bufnr)
+		local bindopts = { silent = true }
+		vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, bindopts)
+		vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bindopts)
+
+		vim.keymap.set('n', 'go', vim.lsp.buf.hover, bindopts)
+		vim.keymap.set('n', 'gO', vim.lsp.buf.code_action, bindopts)
+
+		--vim.api.nvim_set_keymap('n', 'go', '<cmd>lua vim.lsp.buf.hover()<cr>', bindopts)
+		--vim.api.nvim_set_keymap('n', 'gO', '<cmd>lua vim.lsp.buf.code_action()<cr>', bindopts)
+
+		vim.api.nvim_set_keymap('n', 'gl', '<cmd>Telescope lsp_implementations<cr>', bindopts)
+		vim.api.nvim_set_keymap('n', 'gL', '<cmd>Telescope lsp_references<cr>', bindopts)
+		vim.api.nvim_set_keymap('n', 'gd', '<cmd>Telescope lsp_definitions<cr>', bindopts)
+		vim.api.nvim_set_keymap('n', 'gD', '<cmd>Telescope lsp_type_definitions<cr>', bindopts)
+
+		require("aerial").on_attach(client, bufnr)
+	end
 	use {
 		'neovim/nvim-lspconfig',
 		config = function ()
 			require('lspconfig').rust_analyzer.setup({
 				cmd = {"rustup", "run", "stable", "rust-analyzer"},
+				-- TODO: Fix on_attach so keybindings and Aerial works properly
+				on_attach = on_attach,
 				--settings = {
 				--	["rust-analyzer"] = {},
 				--},
 			})
-			vim.api.nvim_set_keymap('n', 'go', '<cmd>lua vim.lsp.buf.hover()<cr>', { silent = true })
-			vim.api.nvim_set_keymap('n', 'gO', '<cmd>lua vim.lsp.buf.code_action()<cr>', { silent = true })
-			vim.api.nvim_set_keymap('n', 'gl', '<cmd>Telescope lsp_implementations<cr>', { silent = true })
-			vim.api.nvim_set_keymap('n', 'gL', '<cmd>Telescope lsp_references<cr>', { silent = true })
-			vim.api.nvim_set_keymap('n', 'gd', '<cmd>Telescope lsp_definitions<cr>', { silent = true })
-			vim.api.nvim_set_keymap('n', 'gD', '<cmd>Telescope lsp_type_definitions<cr>', { silent = true })
 		end,
 	}
 
@@ -317,7 +331,9 @@ vim.opt.foldmethod = 'marker'
 
 -- Highlight yanked region (:h lua-highlight)
 -- Inspired by https://jdhao.github.io/2020/05/22/highlight_yank_region_nvim/
-vim.cmd [[au TextYankPost * silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=150}]]
+vim.cmd [[
+au TextYankPost * silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=150}
+]]
 
 -- Folding for markdown
 vim.cmd [[
