@@ -220,34 +220,40 @@ require('packer').startup(function(use)
 	-- https://github.com/AstroNvim/AstroNvim
 
 	-- LSP Configs
-	local on_attach = function (client, bufnr)
-		local bindopts = { silent = true }
-		vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, bindopts)
-		vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bindopts)
+	vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { silent = true })
+	vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { silent = true })
+	vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { silent = true })
 
-		vim.keymap.set('n', 'go', vim.lsp.buf.hover, bindopts)
-		vim.keymap.set('n', 'gO', vim.lsp.buf.code_action, bindopts)
-
-		--vim.api.nvim_set_keymap('n', 'go', '<cmd>lua vim.lsp.buf.hover()<cr>', bindopts)
-		--vim.api.nvim_set_keymap('n', 'gO', '<cmd>lua vim.lsp.buf.code_action()<cr>', bindopts)
-
-		vim.api.nvim_set_keymap('n', 'gl', '<cmd>Telescope lsp_implementations<cr>', bindopts)
-		vim.api.nvim_set_keymap('n', 'gL', '<cmd>Telescope lsp_references<cr>', bindopts)
-		vim.api.nvim_set_keymap('n', 'gd', '<cmd>Telescope lsp_definitions<cr>', bindopts)
-		vim.api.nvim_set_keymap('n', 'gD', '<cmd>Telescope lsp_type_definitions<cr>', bindopts)
-
-		require("aerial").on_attach(client, bufnr)
-	end
+	-- TODO: Fix on_attach so keybindings and Aerial works properly
+	-- I do not understand why this does not work. It seems that the 'hello
+	-- from the outside below is not displayed if it is in the config function
+	-- of lspconfig.
+	-- Is it a scope issue? the function is compile earlier than the execution
+	-- so the symbol isn't available?
+	-- This issue seems related:
+	-- https://github.com/neovim/nvim-lspconfig/issues/2155
 	use {
 		'neovim/nvim-lspconfig',
 		config = function ()
-			require('lspconfig').rust_analyzer.setup({
-				cmd = {"rustup", "run", "stable", "rust-analyzer"},
-				-- TODO: Fix on_attach so keybindings and Aerial works properly
+			local on_attach = function (client, bufnr)
+				local bindopts = { noremap=true, silent=true, buffer=bufnr }
+
+
+				vim.keymap.set('n', 'go', vim.lsp.buf.hover, bindopts)
+				vim.keymap.set('n', 'gO', vim.lsp.buf.code_action, bindopts)
+
+				local builtin = require('telescope.builtin')
+				vim.keymap.set('n', 'gl', builtin.lsp_implementations, bindopts)
+				vim.keymap.set('n', 'gL', builtin.lsp_references, bindopts)
+				vim.keymap.set('n', 'gd', builtin.lsp_definitions, bindopts)
+				vim.keymap.set('n', 'gD', builtin.lsp_type_definitions, bindopts)
+			end
+			require('lspconfig')['rust_analyzer'].setup({
+				cmd = {"/Users/emieri/.cargo/bin/rustup", "run", "stable", "rust-analyzer"},
 				on_attach = on_attach,
-				--settings = {
-				--	["rust-analyzer"] = {},
-				--},
+				settings = {
+				 	["rust-analyzer"] = {},
+				},
 			})
 		end,
 	}
@@ -313,7 +319,7 @@ require('packer').startup(function(use)
 			})
 
 			-- This might have to be moved to existing on_attach in case such exists
-			require('lspconfig').vimls.setup({ on_attach = aerial.on_attach })
+			--require('lspconfig').vimls.setup()  -- { on_attach = aerial.on_attach })
 
 			vim.api.nvim_set_keymap('n', '<F4>', '<cmd>AerialToggle!<cr>', { silent = true })
 			vim.api.nvim_set_keymap('n', '<leader>mo', '<cmd>Telescope aerial<cr>', { silent = true })
