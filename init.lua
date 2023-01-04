@@ -248,6 +248,10 @@ require('packer').startup(function(use)
 				vim.keymap.set('n', 'gd', builtin.lsp_definitions, bindopts)
 				vim.keymap.set('n', 'gD', builtin.lsp_type_definitions, bindopts)
 			end
+			require('lspconfig')['pyright'].setup({
+				on_attach = on_attach,
+				cmd = {"/home/emil/Documents/Projects/python-json-scheme-viewer/venv/bin/pyright-langserver", "--stdio"},
+			})
 			require('lspconfig')['rust_analyzer'].setup({
 				cmd = {"/Users/emieri/.cargo/bin/rustup", "run", "stable", "rust-analyzer"},
 				on_attach = on_attach,
