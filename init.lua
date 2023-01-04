@@ -81,6 +81,7 @@ require('packer').startup(function(use)
 	-- Neogit
 	use {
 		'TimUntersberger/neogit',
+		commit = '7b7b7bb',
 		requires = 'nvim-lua/plenary.nvim',
 		config = function()
 			require('neogit').setup({
@@ -175,6 +176,7 @@ require('packer').startup(function(use)
 	-- NvimTree
 	use {
 		'kyazdani42/nvim-tree.lua',
+		commit = '7282f7d',
 		config = function ()
 			require('nvim-tree').setup({
 				git = {
@@ -304,6 +306,7 @@ require('packer').startup(function(use)
 	-- File structure / overview via Aerial
 	use {
 		'stevearc/aerial.nvim',
+		commit = '888b672',
 		config = function ()
 			local aerial = require('aerial')
 			aerial.setup({
