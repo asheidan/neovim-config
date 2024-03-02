@@ -12,31 +12,163 @@ vim.opt.shiftwidth = 4
 
 vim.g.mapleader = ' '
 
-local fn = vim.fn
-local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
-if fn.empty(fn.glob(install_path)) > 0 then
-	packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
-end
-
--- Only required if you have packer configured as `opt`
-vim.cmd('packadd packer.nvim')
-
-require('packer').startup(function(use)
-
-	-- Packer
-	use({
-		'wbthomason/packer.nvim',
-		config = function() require 'plugins' end,
-		cmd = {
-			'PackerClean',
-			'PackerCompile',
-			'PackerInstall',
-			'PackerProfile',
-			'PackerStatus',
-			'PackerSync',
-			'PackerUpdate',
-		},
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+	vim.fn.system({
+		"git", "clone", "--filter=blob:none",
+		"https://github.com/folke/lazy.nvim.git",
+		"--branch=stable",
+		lazypath,
 	})
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+	{ 'NLKNguyen/papercolor-theme',
+		lazy = false,
+		init = function()
+			vim.g.PaperColor_Theme_Options = {
+				theme = {
+					default = {
+						allow_bold = 0,
+						allow_italic = 0,
+						-- TODO: Fixa att VertSplit ser inverterad ut
+						--light = {
+						--	-- Change the VertSplit to be a thin blue line without background
+						--	vertsplit_fg = {}
+						--},
+					},
+				},
+			}
+		end,
+		config = function()
+			vim.cmd('colorscheme PaperColor')
+		end,
+	},
+
+	{ 'itchyny/lightline.vim',
+		config = function()
+			-- Other "modeline" settings
+			vim.opt.showmode = false  -- This is indicated by lightline
+			vim.opt.showcmd = true
+
+			vim.cmd([[
+			function! LightLineProjectName()
+				return fnamemodify(getcwd(), ':~:t')
+			endfunction
+			]])
+
+			vim.g.lightline = {
+				colorscheme = 'PaperColor',
+				component_function = {
+					projectname = 'LightLineProjectName',
+				},
+				active = {
+					left = {
+						{ 'mode', 'paste' },
+						{ 'projectname', 'readonly', 'relativepath', 'modified' },
+					},
+				},
+			}
+		end,
+	},
+
+	{ 'tpope/vim-surround' },
+	{ 'tpope/vim-commentary',
+		--config = function()
+		--	vim.api.nvim_create_autocmd('FileType', {
+		--		pattern = 'rust',
+		--		callback = function(args)
+		--			--vim.bo[args.buf].commentstring = '// %s'
+		--		end,
+		--	})
+		--end,
+	},
+	{ 'tpope/vim-fugitive' },
+
+	-- Nvim Tree seems faster than Neotree (for now)
+	-- TODO: WTF is Oil.nvim?
+	{ 'nvim-tree/nvim-tree.lua',
+		tag = 'v1.0',
+		keys = {
+			{"<F2>", "<CMD>NvimTreeToggle<CR>", desc = "NvimTree" },
+		},
+		cmd = "NvimTreeToggle",
+		opts = {
+			git = {
+				enable = false,
+			},
+			renderer = {
+				add_trailing = true,
+				highlight_git = false,
+				indent_markers = {
+					enable = true,
+					icons = {
+						edge = "│",
+						item = "├",
+						corner = "└",
+						none = " ",
+					},
+				},
+				icons = {
+					show = {
+						file = false,
+						folder = false,
+						folder_arrow = false,
+					},
+					--glyphs = {
+					--	folder = {
+					--		arrow_closed = ">",
+					--		arrow_open = "v",
+					--	},
+					--},
+					webdev_colors = false,
+				},
+			},
+		},
+	},
+
+	{ 'folke/which-key.nvim',
+		init = function()
+			vim.o.timeout = true
+			vim.o.timoutlen = 500
+		end,
+		config = function()
+			local wk = require("which-key")
+
+			wk.setup()
+			-- TODO: Describe bindings instead
+			-- wk.register({
+			-- 	g = {
+			-- 		o = 'Hover',
+			-- 		O = 'Code Actions',
+			-- 		l = 'Go to Implementations',
+			-- 		L = 'Go to References',
+			-- 		d = 'Go to Definitions',
+			-- 		D = 'Go to Type Definitions',
+			-- 	}
+			-- })
+		end,
+	},
+
+	{
+		'lukas-reineke/indent-blankline.nvim',
+		main = 'ibl',
+		keys = {
+			{ '<leader>ig', '<cmd>IBLToggle<cr>', desc = "IndentGuides" },
+		},
+		cmd = "IBLToggle",
+		opts = {
+			scope = {
+				enabled = true,
+				show_start = true,
+			},
+		},
+	},
+})
+
+--require('packer').startup(
+local foo = (function(use)
 
 	-- Telescope
 	use({
@@ -75,9 +207,6 @@ require('packer').startup(function(use)
 		},
 	})
 
-	-- Vim Surround
-	use 'tpope/vim-surround'
-
 	-- Neogit
 	use {
 		'TimUntersberger/neogit',
@@ -100,33 +229,6 @@ require('packer').startup(function(use)
 	--	end,
 	--}
 
-	-- Lightline
-	use {
-		'itchyny/lightline.vim',
-		config = function()
-			-- Other "modeline" settings
-			vim.opt.showmode = false  -- This is indicated by lightline
-			vim.opt.showcmd = true
-		end,
-	}
-	vim.cmd([[
-	function! LightLineProjectName()
-		return fnamemodify(getcwd(), ':~:t')
-	endfunction
-	]])
-	vim.g.lightline = {
-		colorscheme = 'PaperColor',
-		component_function = {
-			projectname = 'LightLineProjectName',
-		},
-		active = {
-			left = {
-				{ 'mode', 'paste' },
-				{ 'projectname', 'readonly', 'relativepath', 'modified' },
-			},
-		},
-	}
-
 	use {
 		'nvim-treesitter/nvim-treesitter',
 		run = function () require('nvim-treesitter.install').update({ with_sync = true }) end,
@@ -138,81 +240,10 @@ require('packer').startup(function(use)
 		rtp = 'vim',
 		--config = function() vim.cmd('colorscheme onehalflight') end,
 	}
-	vim.g.PaperColor_Theme_Options = {
-		theme = {
-			default = {
-				allow_bold = 0,
-				allow_italic = 0,
-			},
-		},
-	}
-	use {
-		'NLKNguyen/papercolor-theme',
-		config = function() vim.cmd('colorscheme PaperColor') end,
-	}
 	use 'morhetz/gruvbox'
 	use 'romgrk/doom-one.vim'
 	use 'tomasr/molokai'
 
-	-- WhichKey
-	use {
-		'folke/which-key.nvim',
-		config = function() require("which-key").setup() end,
-	}
-
-	-- IndentGuides
-	use {
-		'lukas-reineke/indent-blankline.nvim',
-		config = function()
-			require('indent_blankline').setup({
-				show_current_context = true,
-				show_current_contect_start = true,
-				--show_end_of_line = true,
-			})
-			vim.api.nvim_set_keymap('n', '<leader>ig', '<cmd>IndentBlanklineToggle<cr>', { silent = true })
-		end,
-	}
-
-	-- NvimTree
-	use {
-		'kyazdani42/nvim-tree.lua',
-		commit = '7282f7d',
-		config = function ()
-			require('nvim-tree').setup({
-				git = {
-					enable = false,
-				},
-				renderer = {
-					add_trailing = true,
-					highlight_git = false,
-					indent_markers = {
-						enable = true,
-						icons = {
-							edge = "│",
-							item = "├",
-							corner = "└",
-							none = " ",
-						},
-					},
-					icons = {
-						show = {
-							file = false,
-							folder = false,
-							folder_arrow = false,
-						},
-						--glyphs = {
-						--	folder = {
-						--		arrow_closed = ">",
-						--		arrow_open = "v",
-						--	},
-						--},
-						webdev_colors = false,
-					},
-				},
-			})
-			vim.api.nvim_set_keymap('n', '<F2>', '<cmd>NvimTreeToggle<cr>', { silent = true })
-		end,
-	}
 
 	-- TODO: Get proper rust support working
 	-- Guide to get lsp working
