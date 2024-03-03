@@ -2,6 +2,35 @@ vim.opt.guifont = 'ProFontWindows:h9'
 --vim.opt.guifont = 'Fira Code:h11'
 vim.opt.background = 'light'
 
+if vim.g.neovide then
+	vim.g.neovide_padding_left = 2
+	vim.g.neovide_padding_right = 2
+	vim.g.neovide_padding_top = 2
+	vim.g.neovide_padding_bottom = 2
+
+	vim.g.neovide_refresh_rate = 15
+	vim.g.neovide_refresh_rate_idle = 1
+
+	local guifontsize = 9
+	local guifontname = 'ProFontIIx'
+
+
+	function SetFontSize(size)
+		guifontsize = size
+		vim.opt.guifont = guifontname .. ':h' .. guifontsize
+	end
+	function AdjustFontSize(amount)
+		SetFontSize(guifontsize + amount)
+	end
+
+	-- This should use Control on everything byt Darwin
+	local zoom_keys = {'<C', '<D'}
+	local zoom_key = zoom_keys[1 + vim.fn.has('macunix')]
+	vim.keymap.set('n', zoom_key..'-+>', function() AdjustFontSize(1) end, { silent = true })
+	vim.keymap.set('n', zoom_key..'-->', function() AdjustFontSize(-1) end, { silent = true })
+	vim.keymap.set('n', zoom_key..'-0>', function() SetFontSize(9) end, { silent = true })
+end
+
 vim.opt.cursorline = true
 
 vim.opt.mouse = "nvi"
