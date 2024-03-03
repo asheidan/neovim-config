@@ -26,6 +26,7 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
 	{ 'NLKNguyen/papercolor-theme',
 		lazy = false,
+		priority = 1000,
 		init = function()
 			vim.g.PaperColor_Theme_Options = {
 				theme = {
@@ -33,10 +34,12 @@ require("lazy").setup({
 						allow_bold = 0,
 						allow_italic = 0,
 						-- TODO: Fixa att VertSplit ser inverterad ut
-						--light = {
-						--	-- Change the VertSplit to be a thin blue line without background
-						--	vertsplit_fg = {}
-						--},
+						override = {
+							-- Change the VertSplit to be a thin blue line without background
+							-- Try to invert the setting in the theme...
+							vertsplit_fg = {'#eeeeee', '255'},
+							vertsplit_bg = {'#005f87', '24'},
+						},
 					},
 				},
 			}
@@ -73,6 +76,7 @@ require("lazy").setup({
 		end,
 	},
 
+	{ 'tpope/vim-fugitive' },
 	{ 'tpope/vim-surround' },
 	{ 'tpope/vim-commentary',
 		--config = function()
@@ -84,10 +88,10 @@ require("lazy").setup({
 		--	})
 		--end,
 	},
-	{ 'tpope/vim-fugitive' },
 
 	-- Nvim Tree seems faster than Neotree (for now)
 	-- TODO: WTF is Oil.nvim?
+	-- TODO: Check CHADTree https://github.com/ms-jpq/chadtree
 	{ 'nvim-tree/nvim-tree.lua',
 		tag = 'v1.0',
 		keys = {
@@ -165,213 +169,177 @@ require("lazy").setup({
 			},
 		},
 	},
-})
 
---require('packer').startup(
-local foo = (function(use)
-
-	-- Telescope
-	use({
-		{
-			'nvim-telescope/telescope.nvim',
-			requires = { 'nvim-lua/plenary.nvim' },
-			config = function()
-				require('telescope').setup({
-					defaults = {
-						layout_strategy = "vertical",
-						layout_config = {
-							height = 0.95,
-							width = 0.95,
-						},
-					},
-					extensions = {
-						project = {
-							base_dirs = {
-								'~/Documents/Projects',
-							},
-						},
-					},
-				})
-				vim.api.nvim_set_keymap('n', '<leader> ', '<cmd>Telescope find_files<cr>', { silent = true })
-				vim.api.nvim_set_keymap('n', '<leader>bb', '<cmd>Telescope buffers<cr>', { silent = true })
-			end,
-		},
-		{
+	{ 'nvim-telescope/telescope.nvim',
+		tag = '0.1.5',
+		dependencies = {
+			'nvim-lua/plenary.nvim',
 			'nvim-telescope/telescope-project.nvim',
-			after = 'telescope.nvim',
-			requires = { 'nvim-telescope/telescope.nvim' },
-			config = function()
-				require('telescope').load_extension('project')
-				vim.api.nvim_set_keymap('n', '<leader>pp', '<cmd>Telescope project<cr>', { silent = true })
-			end,
+			'stevearc/aerial.nvim',  -- For Aerial
 		},
-	})
-
-	-- Neogit
-	use {
-		'TimUntersberger/neogit',
-		commit = '7b7b7bb',
-		requires = 'nvim-lua/plenary.nvim',
 		config = function()
-			require('neogit').setup({
-				disable_commit_confirmation = true,
-				use_magit_keybindings = true,
-			})
-			vim.api.nvim_set_keymap('n', '<leader>gs', '<cmd>Neogit<cr>', { silent = true })
-		end
-	}
+			local telescope = require('telescope')
 
-	-- Tagbar ( Replaced by Aerial.vim
-	--use {
-	--	'preservim/tagbar',
-	--	config = function()
-	--		vim.api.nvim_set_keymap('n', '<F4>', '<cmd>TagbarToggle<cr>', { silent = true })
-	--	end,
-	--}
-
-	use {
-		'nvim-treesitter/nvim-treesitter',
-		run = function () require('nvim-treesitter.install').update({ with_sync = true }) end,
-	}
-
-	-- Colorschemes
-	use {
-		'sonph/onehalf',
-		rtp = 'vim',
-		--config = function() vim.cmd('colorscheme onehalflight') end,
-	}
-	use 'morhetz/gruvbox'
-	use 'romgrk/doom-one.vim'
-	use 'tomasr/molokai'
-
-
-	-- TODO: Get proper rust support working
-	-- Guide to get lsp working
-	-- https://rsdlt.github.io/posts/rust-nvim-ide-guide-walkthrough-development-debug/
-	--
-	-- Inspirational setup
-	-- https://github.com/AstroNvim/AstroNvim
-
-	-- LSP Configs
-	vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { silent = true })
-	vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { silent = true })
-	vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { silent = true })
-
-	-- TODO: Fix on_attach so keybindings and Aerial works properly
-	-- I do not understand why this does not work. It seems that the 'hello
-	-- from the outside below is not displayed if it is in the config function
-	-- of lspconfig.
-	-- Is it a scope issue? the function is compile earlier than the execution
-	-- so the symbol isn't available?
-	-- This issue seems related:
-	-- https://github.com/neovim/nvim-lspconfig/issues/2155
-	use {
-		'neovim/nvim-lspconfig',
-		config = function ()
-			local on_attach = function (client, bufnr)
-				local bindopts = { noremap=true, silent=true, buffer=bufnr }
-
-
-				vim.keymap.set('n', 'go', vim.lsp.buf.hover, bindopts)
-				vim.keymap.set('n', 'gO', vim.lsp.buf.code_action, bindopts)
-
-				local builtin = require('telescope.builtin')
-				vim.keymap.set('n', 'gl', builtin.lsp_implementations, bindopts)
-				vim.keymap.set('n', 'gL', builtin.lsp_references, bindopts)
-				vim.keymap.set('n', 'gd', builtin.lsp_definitions, bindopts)
-				vim.keymap.set('n', 'gD', builtin.lsp_type_definitions, bindopts)
-			end
-			require('lspconfig')['pyright'].setup({
-				on_attach = on_attach,
-				cmd = {"/home/emil/Documents/Projects/python-json-scheme-viewer/venv/bin/pyright-langserver", "--stdio"},
-			})
-			require('lspconfig')['rust_analyzer'].setup({
-				cmd = {"/Users/emieri/.cargo/bin/rustup", "run", "stable", "rust-analyzer"},
-				on_attach = on_attach,
-				settings = {
-				 	["rust-analyzer"] = {},
+			telescope.setup({
+				defaults = {
+					file_ignore_patterns = { "^venv", "^__pycache__" },
+					layout_strategy = "vertical",
+					layout_config = {
+						height = 0.95,
+						width = 0.95,
+					},
+				},
+				extensions = {
+					aerial = {
+						show_nesting = {
+							["_"] = true,  -- default
+							-- json = false,
+							-- yaml = false,
+						},
+					},
+					project = {
+						base_dirs = {
+							'~/Documents/Projects',
+						},
+					},
 				},
 			})
-		end,
-	}
 
-	-- Completion via Cmp
-	use {
-		'hrsh7th/nvim-cmp',
-		requires = {
-			'hrsh7th/cmp-nvim-lsp',
-			{'hrsh7th/cmp-nvim-lsp-signature-help', after = 'nvim-cmp' },
+			telescope.load_extension('project')
+			telescope.load_extension('aerial')
+		end,
+		cmd = { 'Telescope' },
+		keys = {
+			{ '<leader> ', '<cmd>Telescope find_files<cr>', desc = 'Telescope find_files' },
+			{ '<leader>bb', '<cmd>Telescope buffers<cr>', desc = 'Telescope buffers' },
+			{ '<leader>mo', '<cmd>Telescope aerial<cr>', desc = 'Telescope Overview' },
+			{ '<leader>pp', '<cmd>Telescope project<cr>' },
 		},
-		config = function ()
-			local cmp = require('cmp')
+	},
+	{ 'nvim-telescope/telescope-project.nvim',
+		branch = 'master',
+	},
 
-			local fallback_or = function (not_fallback)
-				local executor = function (fallback)
-					if cmp.visible() then
-						not_fallback()
-					else
-						fallback()
-					end
-				end
-				return executor
-			end
+	-- LSP/Completion
+	{ -- COQ Completion
+		'ms-jpq/coq_nvim',
+		branch = 'coq',
+		dependencies = {
+			{ 'ms-jpq/coq.artifacts', branch = 'artifacts' },
+		},
+	},
+	{ 'folke/neodev.nvim',  -- LSP settings for neovim config and plugins
+		version = '*',
+		opts = {},
+	},
+	{
+		'neovim/nvim-lspconfig',
+		--tag = 'v0.1.7',
+		version = '0.1.7',
+		dependencies = {
+			'folke/neodev.nvim',
+		},
+		config = function()
+			-- Inspirational setup
+			-- https://github.com/AstroNvim/AstroNvim
 
-			cmp.setup({
-				mapping = cmp.mapping.preset.insert({
-					['<Tab>'] = cmp.mapping.confirm({ select = true }),
-					['<C-n>'] = fallback_or(cmp.select_next_item),
-					['<C-p>'] = fallback_or(cmp.select_prev_item),
-				}),
-				window = {
-					--completion = cmp.config.window.bordered(),
-					--documentation = cmp.config.window.bordered(),
+			local lspconfig = require('lspconfig')
+
+			lspconfig.rust_analyzer.setup({
+				cmd = { vim.fn.expand('~/') .. "/.cargo/bin/rustup", "run", "stable", "rust-analyzer" },
+				--on_attach = on_attach,
+				settings = {
+					["rust-analyzer"] = {},
 				},
-				sources = cmp.config.sources({
-					{ name = 'nvim_lsp' },
-					{ name = 'nvim_lsp_signature_help' },
-				}),
+			})
+			lspconfig.pyright.setup({
+				--on_attach = on_attach,
+				cmd = {"/opt/homebrew/bin/pyright-langserver", "--stdio"},
+			})
+			lspconfig.lua_ls.setup({})
+
+			-- LSP Configs
+			vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { silent = true })
+			vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { silent = true })
+			vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { silent = true })
+
+			vim.api.nvim_create_autocmd('LspAttach', {
+				group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+				callback = function(ev)
+					local bindopts = { noremap = true, silent = true, buffer = ev.buf }
+
+					-- Enable completion triggered by <C-x><C-o>
+					-- vim.bo[ev.buf].omnifunc = 'v:lua.lim.lsp.omnifunc'
+
+					--	--vim.keymap.set('n', 'gi', vim.lsp.buf.signature_help, bindopts)
+					--	vim.keymap.set('n', 'go', vim.lsp.buf.hover, bindopts)
+					--	vim.keymap.set('n', 'gO', vim.lsp.buf.code_action, bindopts)
+
+					--	local builtin = require('telescope.builtin')
+					--	vim.keymap.set('n', 'gl', builtin.lsp_implementations, bindopts)
+					--	vim.keymap.set('n', 'gL', builtin.lsp_references, bindopts)
+					--	vim.keymap.set('n', 'gd', builtin.lsp_definitions, bindopts)
+					--	vim.keymap.set('n', 'gD', builtin.lsp_type_definitions, bindopts)
+
+					-- Buffer local mappings.
+					--vim.keymap.set('n', 'gi', vim.lsp.buf.signature_help, bindopts)
+					vim.keymap.set('n', 'go', vim.lsp.buf.hover, bindopts)
+					vim.keymap.set('n', 'gO', vim.lsp.buf.code_action, bindopts)
+
+					local builtin = require('telescope.builtin')
+					vim.keymap.set('n', 'gl', builtin.lsp_implementations, bindopts)
+					vim.keymap.set('n', 'gL', builtin.lsp_references, bindopts)
+					vim.keymap.set('n', 'gd', builtin.lsp_definitions, bindopts)
+					vim.keymap.set('n', 'gD', builtin.lsp_type_definitions, bindopts)
+				end,
 			})
 		end,
-	}
+	},
+	{
+		'nvim-treesitter/nvim-treesitter',
+		version = '0.9.2',
+		build = ':TSUpdate',
+		config = function()
+			local configs = require("nvim-treesitter.configs")
 
-	-- File structure / overview via Aerial
-	use {
+			configs.setup({
+				ensure_installed = { "lua", "vim", "rust", "python", "markdown" },
+			})
+		end,
+	},
+	{ -- File structure / overview via Aerial
 		'stevearc/aerial.nvim',
-		commit = '888b672',
-		config = function ()
-			local aerial = require('aerial')
-			aerial.setup({
-				backends = { "lsp", "treesitter", "markdown" },
-				layout = {
-					default_direction = "prefer_right",
-					placement = "edge",
-				},
-				attach_mode = "window",
-				show_guides = true,
-				guides = {
-					mid_item = "├ ",
-					last_item = "└ ",
-					nested_top = "│ ",
-					whitespace = "  ",
-				},
-			})
+		version = '1.5.0',
+		cmd = { 'AerialToggle' },
+		keys = {
+			{'<F4>', '<cmd>AerialToggle!<cr>', desc = "Aerial overview" },
+		},
+		opts = {
+			backends = { 'lsp', 'treesitter', 'markdown' },
+			layout = {
+				default_direction = "prefer_right",
+				placement = "edge",
+			},
+			show_guides = true,
+			-- guides = {
+			-- 	mid_item = "├ ",
+			-- 	last_item = "└ ",
+			-- 	nested_top = "│ ",
+			-- 	whitespace = "  ",
+			-- },
+		},
+		dependencies = { 'nvim-treesitter/nvim-treesitter' },
+	},
 
-			-- This might have to be moved to existing on_attach in case such exists
-			--require('lspconfig').vimls.setup()  -- { on_attach = aerial.on_attach })
-
-			vim.api.nvim_set_keymap('n', '<F4>', '<cmd>AerialToggle!<cr>', { silent = true })
-			vim.api.nvim_set_keymap('n', '<leader>mo', '<cmd>Telescope aerial<cr>', { silent = true })
-
-			require('telescope').load_extension('aerial')
-		end,
-	}
-
-	-- Automatically set up your configuration after cloning packer.nvim
-	-- Put this at the end after all plugins
-	if packer_bootstrap then
-		require('packer').sync()
-	end
-end)
+	-- Other colorschemes
+	{ 'morhetz/gruvbox', lazy = true },
+	{ 'romgrk/doom-one.vim', lazy = true },
+	{'sonph/onehalf', lazy = true,
+		rtp = { paths = { 'vim' } },
+	},
+	{ 'tomasr/molokai', lazy = true },
+	{ 'tpope/vim-vividchalk', lazy = true },
+})
 
 -- Misc mappings
 vim.api.nvim_set_keymap('n', '<F3>', '<CMD>set number!<CR>:echo "Line numbers: " . strpart("OffOn", 3* &number, 3)<CR>',
@@ -381,6 +349,7 @@ vim.opt.foldmethod = 'marker'
 
 -- Highlight yanked region (:h lua-highlight)
 -- Inspired by https://jdhao.github.io/2020/05/22/highlight_yank_region_nvim/
+-- TODO: Change to pure lua
 vim.cmd [[
 au TextYankPost * silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=150}
 ]]
