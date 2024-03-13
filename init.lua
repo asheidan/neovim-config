@@ -203,7 +203,9 @@ require("lazy").setup({
 		tag = '0.1.5',
 		dependencies = {
 			'nvim-lua/plenary.nvim',
-			'nvim-telescope/telescope-project.nvim',
+			{'nvim-telescope/telescope-project.nvim',
+				branch = 'master',
+			},
 			'stevearc/aerial.nvim',  -- For Aerial
 		},
 		config = function()
@@ -245,9 +247,6 @@ require("lazy").setup({
 			{ '<leader>pp', '<cmd>Telescope project<cr>' },
 		},
 	},
-	{ 'nvim-telescope/telescope-project.nvim',
-		branch = 'master',
-	},
 
 	-- LSP/Completion
 	{ -- COQ Completion
@@ -257,16 +256,12 @@ require("lazy").setup({
 			{ 'ms-jpq/coq.artifacts', branch = 'artifacts' },
 		},
 	},
-	{ 'folke/neodev.nvim',  -- LSP settings for neovim config and plugins
-		version = '*',
-		opts = {},
-	},
 	{
 		'neovim/nvim-lspconfig',
 		--tag = 'v0.1.7',
 		version = '0.1.7',
 		dependencies = {
-			'folke/neodev.nvim',
+			{'folke/neodev.nvim', opts = {}},  -- LSP settings for neovim config and plugins
 		},
 		config = function()
 			-- Inspirational setup
