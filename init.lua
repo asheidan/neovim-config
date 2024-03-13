@@ -18,6 +18,7 @@ if vim.g.neovide then
 	function SetFontSize(size)
 		guifontsize = size
 		vim.opt.guifont = guifontname .. ':h' .. guifontsize
+		print('Gui-font size set to: ' .. guifontsize)
 	end
 	function AdjustFontSize(amount)
 		SetFontSize(guifontsize + amount)
@@ -26,9 +27,9 @@ if vim.g.neovide then
 	-- This should use Control on everything byt Darwin
 	local zoom_keys = {'<C', '<D'}
 	local zoom_key = zoom_keys[1 + vim.fn.has('macunix')]
-	vim.keymap.set('n', zoom_key..'-+>', function() AdjustFontSize(1) end, { silent = true })
-	vim.keymap.set('n', zoom_key..'-->', function() AdjustFontSize(-1) end, { silent = true })
-	vim.keymap.set('n', zoom_key..'-0>', function() SetFontSize(9) end, { silent = true })
+	vim.keymap.set('n', zoom_key..'-+>', function() AdjustFontSize(1) end )
+	vim.keymap.set('n', zoom_key..'-->', function() AdjustFontSize(-1) end )
+	vim.keymap.set('n', zoom_key..'-0>', function() SetFontSize(9) end )
 end
 
 vim.opt.cursorline = true
@@ -62,7 +63,6 @@ require("lazy").setup({
 					default = {
 						allow_bold = 0,
 						allow_italic = 0,
-						-- TODO: Fixa att VertSplit ser inverterad ut
 						override = {
 							-- Change the VertSplit to be a thin blue line without background
 							-- Try to invert the setting in the theme...
