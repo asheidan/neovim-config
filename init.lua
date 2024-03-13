@@ -79,6 +79,9 @@ require("lazy").setup({
 	},
 
 	{ 'itchyny/lightline.vim',
+		dependencies = {
+			{'spywhere/lightline-lsp'},
+		},
 		config = function()
 			-- Other "modeline" settings
 			vim.opt.showmode = false  -- This is indicated by lightline
@@ -92,13 +95,40 @@ require("lazy").setup({
 
 			vim.g.lightline = {
 				colorscheme = 'PaperColor',
+				component_expand = {
+					linter_hints = 'lightline#lsp#hints',
+					linter_infos = 'lightline#lsp#infos',
+					linter_warnings = 'lightline#lsp#warnings',
+					linter_errors = 'lightline#lsp#errors',
+					linter_ok = 'lightline#lsp#ok',
+				},
 				component_function = {
 					projectname = 'LightLineProjectName',
+				},
+				component_type = {
+					linter_hints = 'right',
+					linter_infos = 'right',
+					linter_warnings = 'warning',
+					linter_errors = 'error',
+					linter_ok = 'right',
 				},
 				active = {
 					left = {
 						{ 'mode', 'paste' },
 						{ 'projectname', 'readonly', 'relativepath', 'modified' },
+					},
+					right = {
+						-- Default fields
+						{ 'lineinfo' },
+						{ 'percent' },
+						{ 'fileformat', 'fileencoding', 'filetype' },
+						-- Lsp diagnostics
+						{ 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_hints', 'linter_ok' },
+					},
+				},
+				inactive = {
+					left = {
+						{ 'projectname', 'relativepath' },
 					},
 				},
 			}
