@@ -386,7 +386,12 @@ require("lazy").setup({
 	},
 
 	-- Other colorschemes
-	{ 'morhetz/gruvbox', lazy = true },
+	{ 'morhetz/gruvbox',
+		lazy = true,
+		init = function()
+			vim.g.gruvbox_bold = 0;
+		end,
+	},
 	{ 'romgrk/doom-one.vim', lazy = true },
 	{'sonph/onehalf', lazy = true,
 		rtp = { paths = { 'vim' } },
