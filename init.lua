@@ -408,16 +408,20 @@ vim.opt.foldmethod = 'marker'
 
 -- Highlight yanked region (:h lua-highlight)
 -- Inspired by https://jdhao.github.io/2020/05/22/highlight_yank_region_nvim/
--- TODO: Change to pure lua
-vim.cmd [[
-au TextYankPost * silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=150}
-]]
+vim.api.nvim_create_autocmd({ "TextYankPost" }, {
+	callback = function()
+		vim.highlight.on_yank({higroup="IncSearch", timeout=150})
+	end,
+})
 
 -- Folding for markdown
-vim.cmd [[
-autocmd FileType markdown setlocal foldexpr=MarkdownFold()
-autocmd FileType markdown setlocal foldmethod=expr
-]]
+vim.api.nvim_create_autocmd({"FileType"}, {
+	pattern = "markdown",
+	callback = function()
+		vim.opt_local.foldexpr="MarkdownFold()"
+		vim.opt_local.foldmethod="expr"
+	end,
+})
 
 -- Better fold text
 -- https://essais.co/better-folding-in-neovim/
