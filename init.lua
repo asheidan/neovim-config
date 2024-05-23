@@ -322,6 +322,11 @@ require("lazy").setup({
 				callback = function(ev)
 					local bindopts = { noremap = true, silent = true, buffer = ev.buf }
 
+					-- Support for inlay_hint was added in 0.10
+					if vim.fn.has("nvim-0.10") == 1 then
+						vim.lsp.inlay_hint.enable()
+					end
+
 					-- Enable completion triggered by <C-x><C-o>
 					-- vim.bo[ev.buf].omnifunc = 'v:lua.lim.lsp.omnifunc'
 
