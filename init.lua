@@ -91,6 +91,9 @@ require("lazy").setup({
 			function! LightLineProjectName()
 				return fnamemodify(getcwd(), ':~:t')
 			endfunction
+			function! LightLineRelativePath()
+				return expand('%:~:.')
+			endfunction
 			]])
 
 			vim.g.lightline = {
@@ -104,6 +107,7 @@ require("lazy").setup({
 				},
 				component_function = {
 					projectname = 'LightLineProjectName',
+					projectrelative = 'LightLineRelativePath',
 				},
 				component_type = {
 					linter_hints = 'right',
@@ -115,7 +119,7 @@ require("lazy").setup({
 				active = {
 					left = {
 						{ 'mode', 'paste' },
-						{ 'projectname', 'readonly', 'relativepath', 'modified' },
+						{ 'projectname', 'readonly', 'projectrelative', 'modified' },
 					},
 					right = {
 						-- Default fields
