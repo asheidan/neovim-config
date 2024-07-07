@@ -139,7 +139,14 @@ require("lazy").setup({
 		end,
 	},
 
-	{ 'tpope/vim-fugitive' },
+	{
+		'tpope/vim-fugitive',
+		lazy = true,
+		cmd = { "Git" },
+		keys = {
+			{'<leader>gs', '<cmd>Git<cr>', desc = 'Git status' },
+		},
+	},
 	{ 'tpope/vim-surround' },
 	{ 'tpope/vim-commentary',
 		--config = function()
@@ -160,7 +167,7 @@ require("lazy").setup({
 		keys = {
 			{"<F2>", "<CMD>NvimTreeToggle<CR>", desc = "NvimTree" },
 		},
-		cmd = "NvimTreeToggle",
+		cmd = {"NvimTreeOpen", "NvimTreeToggle"},
 		opts = {
 			git = {
 				enable = false,
@@ -235,6 +242,7 @@ require("lazy").setup({
 
 	{ 'nvim-telescope/telescope.nvim',
 		tag = '0.1.5',
+		lazy = true,
 		dependencies = {
 			'nvim-lua/plenary.nvim',
 			{'nvim-telescope/telescope-project.nvim',
