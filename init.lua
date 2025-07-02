@@ -14,7 +14,6 @@ if vim.g.neovide then
 	local guifontsize = 9
 	local guifontname = 'ProFontIIx'
 
-
 	function SetFontSize(size)
 		guifontsize = size
 		vim.opt.guifont = guifontname .. ':h' .. guifontsize
@@ -24,21 +23,27 @@ if vim.g.neovide then
 		SetFontSize(guifontsize + amount)
 	end
 
-	-- This should use Control on everything byt Darwin
+	-- This should use Control on everything but Darwin
 	local zoom_keys = {'<C', '<D'}
 	local zoom_key = zoom_keys[1 + vim.fn.has('macunix')]
 	vim.keymap.set('n', zoom_key..'-+>', function() AdjustFontSize(1) end )
 	vim.keymap.set('n', zoom_key..'-->', function() AdjustFontSize(-1) end )
 	vim.keymap.set('n', zoom_key..'-0>', function() SetFontSize(9) end )
+
+	vim.opt.title = true
 end
 
 vim.opt.cursorline = true
 
 vim.opt.mouse = "nvi"
 
+vim.opt.wildmode = "full:longest"
+
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
+
+vim.opt.linebreak = true
 
 vim.g.mapleader = ' '
 
@@ -74,7 +79,7 @@ require("lazy").setup({
 			}
 		end,
 		config = function()
-			vim.cmd('colorscheme PaperColor')
+			vim.cmd.colorscheme('PaperColor')
 		end,
 	},
 
@@ -119,13 +124,14 @@ require("lazy").setup({
 				active = {
 					left = {
 						{ 'mode', 'paste' },
+						--{ 'projectname', 'readonly', 'relativepath', 'modified' },
 						{ 'projectname', 'readonly', 'projectrelative', 'modified' },
 					},
 					right = {
 						-- Default fields
 						{ 'lineinfo' },
 						{ 'percent' },
-						{ 'fileformat', 'fileencoding', 'filetype' },
+						{ 'filetype' },  -- 'fileformat', 'fileencoding',
 						-- Lsp diagnostics
 						{ 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_hints', 'linter_ok' },
 					},
@@ -139,8 +145,7 @@ require("lazy").setup({
 		end,
 	},
 
-	{
-		'tpope/vim-fugitive',
+	{ 'tpope/vim-fugitive',
 		lazy = true,
 		cmd = { "Git" },
 		keys = {
@@ -225,8 +230,7 @@ require("lazy").setup({
 		end,
 	},
 
-	{
-		'lukas-reineke/indent-blankline.nvim',
+	{ 'lukas-reineke/indent-blankline.nvim',
 		main = 'ibl',
 		keys = {
 			{ '<leader>ig', '<cmd>IBLToggle<cr>', desc = "IndentGuides" },
@@ -294,22 +298,40 @@ require("lazy").setup({
 	{ -- COQ Completion
 		'ms-jpq/coq_nvim',
 		branch = 'coq',
+		lazy = true,
+		cmd = {'COQnow', 'COQhelp'},
 		dependencies = {
 			{ 'ms-jpq/coq.artifacts', branch = 'artifacts' },
 		},
 	},
-	{
-		'neovim/nvim-lspconfig',
+	{ 'neovim/nvim-lspconfig',
 		--tag = 'v0.1.7',
 		version = '0.1.7',
 		dependencies = {
-			{'folke/neodev.nvim', opts = {}},  -- LSP settings for neovim config and plugins
+			-- Neodev has been deprecated
+			-- {'folke/neodev.nvim', enabled = false, opts = {}},  -- LSP settings for neovim config and plugins
 		},
 		config = function()
 			-- Inspirational setup
 			-- https://github.com/AstroNvim/AstroNvim
 
 			local lspconfig = require('lspconfig')
+			local util = require('lspconfig/util')
+
+			local path = util.path
+
+			local function get_python_path(workspace)
+				if vim.env.VIRTUAL_ENV then
+					return path.join(vim.env.VIRTUAL_ENV, 'bin', 'python')
+				end
+
+				local match = vim.fn.glob(path.join(workspace, '.venv'))
+				if match ~= '' then
+					return path.join(match, 'bin', 'python')
+				end
+
+				return vim.fn.exepath('python3') or vim.fn.exepath('python') or 'python'
+			end
 
 			lspconfig.rust_analyzer.setup({
 				cmd = { vim.fn.expand('~/') .. "/.cargo/bin/rustup", "run", "stable", "rust-analyzer" },
@@ -321,13 +343,17 @@ require("lazy").setup({
 			lspconfig.pyright.setup({
 				--on_attach = on_attach,
 				cmd = {"/opt/homebrew/bin/pyright-langserver", "--stdio"},
+				-- https://github.com/neovim/nvim-lspconfig/issues/500
+				before_init = function(_, config)
+					config.settings.python.pythonPath = get_python_path(config.root_dir)
+				end,
 			})
 			lspconfig.lua_ls.setup({})
 
 			-- LSP Configs
-			vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { silent = true })
-			vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { silent = true })
-			vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { silent = true })
+			vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { silent = true, desc = 'Display diagnostics' })
+			vim.keymap.set('n', '[d', function () vim.diagnostic.jump({count=-1, float=true}) end, { silent = true, desc = 'Previous diagnostic' })
+			vim.keymap.set('n', ']d', function () vim.diagnostic.jump({count=1, float=true}) end, { silent = true, desc = 'Next diagnostic' })
 
 			vim.api.nvim_create_autocmd('LspAttach', {
 				group = vim.api.nvim_create_augroup('UserLspConfig', {}),
@@ -366,6 +392,20 @@ require("lazy").setup({
 			})
 		end,
 	},
+	{  -- Replaces folke/neodev.nvim
+		-- Placed in separate statement instead of dependency
+		-- for lspconfig to enable lazy loading.
+		'folke/lazydev.nvim',
+		lazy = true,
+		ft = 'lua',
+		opts = {},
+	},
+	--{  -- Automatically display diagnostics
+	--	-- This seems to be broken
+	--	'dgagn/diagflow.nvim',
+	--	--event = 'LspAttach',
+	--	opts = {}
+	--},
 	{
 		'nvim-treesitter/nvim-treesitter',
 		version = '0.9.2',
@@ -415,6 +455,7 @@ require("lazy").setup({
 	},
 	{ 'tomasr/molokai', lazy = true },
 	{ 'tpope/vim-vividchalk', lazy = true },
+	--{ 'meain/hima-vim', lazy = true },
 })
 
 -- Misc mappings
