@@ -1,4 +1,4 @@
-vim.opt.guifont = 'ProFontWindows:h9'
+vim.opt.guifont = 'ProFontIIx:h9'
 --vim.opt.guifont = 'Fira Code:h11'
 vim.opt.background = 'light'
 
@@ -252,7 +252,7 @@ require("lazy").setup({
 			{'nvim-telescope/telescope-project.nvim',
 				branch = 'master',
 			},
-			'stevearc/aerial.nvim',  -- For Aerial
+			-- 'stevearc/aerial.nvim',  -- For Aerial, installation and config defined separately
 		},
 		config = function()
 			local telescope = require('telescope')
@@ -420,7 +420,7 @@ require("lazy").setup({
 	},
 	{ -- File structure / overview via Aerial
 		'stevearc/aerial.nvim',
-		version = '1.5.0',
+		version = '2.5.0',
 		cmd = { 'AerialToggle' },
 		keys = {
 			{'<F4>', '<cmd>AerialToggle!<cr>', desc = "Aerial overview" },
