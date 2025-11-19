@@ -314,7 +314,7 @@ require("lazy").setup({
 	},
 	{ 'neovim/nvim-lspconfig',
 		--tag = 'v0.1.7',
-		version = '0.1.7',
+		version = '2.5.0',
 		dependencies = {
 			-- Neodev has been deprecated
 			-- {'folke/neodev.nvim', enabled = false, opts = {}},  -- LSP settings for neovim config and plugins
@@ -341,14 +341,17 @@ require("lazy").setup({
 				return vim.fn.exepath('python3') or vim.fn.exepath('python') or 'python'
 			end
 
-			lspconfig.rust_analyzer.setup({
+			vim.lsp.enable('rust_analyzer')
+			vim.lsp.config('rust_analyzer', {
 				cmd = { vim.fn.expand('~/') .. "/.cargo/bin/rustup", "run", "stable", "rust-analyzer" },
 				--on_attach = on_attach,
 				settings = {
 					["rust-analyzer"] = {},
 				},
 			})
-			lspconfig.pyright.setup({
+
+			vim.lsp.enable('pyright')
+			vim.lsp.config('pyright', {
 				--on_attach = on_attach,
 				cmd = {"/opt/homebrew/bin/pyright-langserver", "--stdio"},
 				-- https://github.com/neovim/nvim-lspconfig/issues/500
@@ -356,9 +359,9 @@ require("lazy").setup({
 					config.settings.python.pythonPath = get_python_path(config.root_dir)
 				end,
 			})
-			lspconfig.lua_ls.setup({})
 
-			lspconfig.clangd.setup({})
+			vim.lsp.enable('lua_ls')
+			vim.lsp.enable('clangd')
 
 			-- LSP Configs
 			vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { silent = true, desc = 'Display diagnostics' })
