@@ -416,7 +416,8 @@ require("lazy").setup({
 	--},
 	{
 		'nvim-treesitter/nvim-treesitter',
-		version = '0.9.2',
+		version = '0.10.0',
+		lazy = false,  -- Treesitter doesn't work with lazy load according to readme
 		build = ':TSUpdate',
 		config = function()
 			local configs = require("nvim-treesitter.configs")
