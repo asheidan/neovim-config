@@ -232,22 +232,10 @@ require("lazy").setup({
 			vim.opt.timeout = true
 			vim.opt.timeoutlen = 500
 		end,
-		config = function()
-			local wk = require("which-key")
-
-			wk.setup()
-			-- TODO: Describe bindings instead
-			-- wk.register({
-			-- 	g = {
-			-- 		o = 'Hover',
-			-- 		O = 'Code Actions',
-			-- 		l = 'Go to Implementations',
-			-- 		L = 'Go to References',
-			-- 		d = 'Go to Definitions',
-			-- 		D = 'Go to Type Definitions',
-			-- 	}
-			-- })
-		end,
+		opts = {
+			expand = 1,
+			spec = {},
+		},
 	},
 
 	{ 'lukas-reineke/indent-blankline.nvim',
@@ -309,8 +297,8 @@ require("lazy").setup({
 		keys = {
 			{ '<leader> ', '<cmd>Telescope find_files<cr>', desc = 'Telescope find_files' },
 			{ '<leader>bb', '<cmd>Telescope buffers<cr>', desc = 'Telescope buffers' },
-			{ '<leader>mo', '<cmd>Telescope aerial<cr>', desc = 'Telescope Overview' },
-			{ '<leader>pp', '<cmd>Telescope project<cr>' },
+			{ '<leader>mo', '<cmd>Telescope aerial<cr>', desc = 'Telescope overview' },
+			{ '<leader>pp', '<cmd>Telescope project<cr>', desc = 'Telescope projects' },
 		},
 	},
 
@@ -385,29 +373,27 @@ require("lazy").setup({
 						vim.lsp.inlay_hint.enable()
 					end
 
+					local function table_update(target, source)
+						for k,v in pairs(source) do
+							target[k] = v;
+						end
+
+						return target;
+					end
+
 					-- Enable completion triggered by <C-x><C-o>
 					-- vim.bo[ev.buf].omnifunc = 'v:lua.lim.lsp.omnifunc'
 
-					--	--vim.keymap.set('n', 'gi', vim.lsp.buf.signature_help, bindopts)
-					--	vim.keymap.set('n', 'go', vim.lsp.buf.hover, bindopts)
-					--	vim.keymap.set('n', 'gO', vim.lsp.buf.code_action, bindopts)
-
-					--	local builtin = require('telescope.builtin')
-					--	vim.keymap.set('n', 'gl', builtin.lsp_implementations, bindopts)
-					--	vim.keymap.set('n', 'gL', builtin.lsp_references, bindopts)
-					--	vim.keymap.set('n', 'gd', builtin.lsp_definitions, bindopts)
-					--	vim.keymap.set('n', 'gD', builtin.lsp_type_definitions, bindopts)
-
 					-- Buffer local mappings.
 					--vim.keymap.set('n', 'gi', vim.lsp.buf.signature_help, bindopts)
-					vim.keymap.set('n', 'go', vim.lsp.buf.hover, bindopts)
-					vim.keymap.set('n', 'gO', vim.lsp.buf.code_action, bindopts)
+					vim.keymap.set('n', 'go', vim.lsp.buf.hover, table_update({desc='LSP Hover'}, bindopts))
+					vim.keymap.set('n', 'gO', vim.lsp.buf.code_action, table_update({desc='LSP Code Actions'}, bindopts))
 
 					local builtin = require('telescope.builtin')
-					vim.keymap.set('n', 'gl', builtin.lsp_implementations, bindopts)
-					vim.keymap.set('n', 'gL', builtin.lsp_references, bindopts)
-					vim.keymap.set('n', 'gd', builtin.lsp_definitions, bindopts)
-					vim.keymap.set('n', 'gD', builtin.lsp_type_definitions, bindopts)
+					vim.keymap.set('n', 'gl', builtin.lsp_implementations, table_update({ desc = 'LSP Implementations (telescope)' }, bindopts))
+					vim.keymap.set('n', 'gL', builtin.lsp_references, table_update({desc = 'LSP References (Telescope)'}, bindopts))
+					vim.keymap.set('n', 'gd', builtin.lsp_definitions, table_update({desc='LSP Definitions (Telescope)'}, bindopts))
+					vim.keymap.set('n', 'gD', builtin.lsp_type_definitions, table_update({desc='LSP Type Definitions (Telescope'}, bindopts))
 				end,
 			})
 		end,
