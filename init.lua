@@ -145,6 +145,26 @@ require("lazy").setup({
 		end,
 	},
 
+	-- Feature-adding plugins
+
+	{ 'NeogitOrg/neogit',  -- Git-based on magit
+		cmd = { 'Neogit' },
+		dependencies = {
+			'sindrets/diffview.nvim',  -- optional diff integration
+		},
+	},
+
+	{ 'nicolasgb/jj.nvim',  -- Support for JJ (Jujutsu)
+		enabled = true, -- This is _very_ new so I'll keep an eye on it
+		cmd = { 'J' },
+		config = function() require("jj").setup({}) end,
+	},
+
+	{
+		'will133/vim-dirdiff',  -- Diff for directories
+		cmd = { 'DirDiff' },
+	},
+
 	{ 'tpope/vim-fugitive',
 		lazy = true,
 		cmd = { "Git" },
