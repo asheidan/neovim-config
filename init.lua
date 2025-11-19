@@ -482,6 +482,8 @@ require("lazy").setup({
 vim.api.nvim_set_keymap('n', '<F3>', '<CMD>set number!<CR>:echo "Line numbers: " . strpart("OffOn", 3* &number, 3)<CR>',
                         { silent = true })
 
+vim.api.nvim_set_keymap('n', '<LEADER>fp', '<CMD>e $MYVIMRC<CR>', { silent = true, desc = 'Edit $MYVIMRC' })
+
 vim.opt.foldmethod = 'marker'
 
 -- Highlight yanked region (:h lua-highlight)
