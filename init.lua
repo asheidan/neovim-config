@@ -399,6 +399,8 @@ require("lazy").setup({
 					vim.keymap.set('n', 'gL', builtin.lsp_references, table_update({desc = 'LSP References (Telescope)'}, bindopts))
 					vim.keymap.set('n', 'gd', builtin.lsp_definitions, table_update({desc='LSP Definitions (Telescope)'}, bindopts))
 					vim.keymap.set('n', 'gD', builtin.lsp_type_definitions, table_update({desc='LSP Type Definitions (Telescope'}, bindopts))
+					vim.keymap.set('n', '<leader>ms', builtin.lsp_workspace_symbols, table_update({desc='LSP Buffer Symbols'}, bindopts))
+					vim.keymap.set('n', '<leader>mS', builtin.lsp_workspace_symbols, table_update({desc='LSP Workspace Symbols'}, bindopts))
 				end,
 			})
 		end,
