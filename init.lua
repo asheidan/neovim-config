@@ -358,6 +358,8 @@ require("lazy").setup({
 			})
 			lspconfig.lua_ls.setup({})
 
+			lspconfig.clangd.setup({})
+
 			-- LSP Configs
 			vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { silent = true, desc = 'Display diagnostics' })
 			vim.keymap.set('n', '[d', function () vim.diagnostic.jump({count=-1, float=true}) end, { silent = true, desc = 'Previous diagnostic' })
