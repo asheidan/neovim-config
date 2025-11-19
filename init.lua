@@ -511,3 +511,14 @@ function! CustomFoldText()
 	return text
 endfunction
 ]]
+
+-- Fix issue where some plugin sets the conceallevel which causes
+-- parts of help-files to be concealed
+vim.api.nvim_create_autocmd({ 'FileType' }, {
+	pattern = "help",
+	callback = function()
+		vim.opt_local.conceallevel = 0
+	end,
+})
+
+-- TODO: Debug-setup in nvim via DAP https://tamerlan.dev/a-guide-to-debugging-applications-in-neovim/
