@@ -341,18 +341,20 @@ require("lazy").setup({
 				return vim.fn.exepath('python3') or vim.fn.exepath('python') or 'python'
 			end
 
-			vim.lsp.enable('rust_analyzer')
-			vim.lsp.config('rust_analyzer', {
+			-- I can't get the new config via nvim 0.11 (vim.lsp.config/.enable) without
+			-- every lsp trying to attach to every file I'm opening. Staying with
+			-- nvim-lspconfig (lspconfig[].setup) for now.
+
+			lspconfig.rust_analyzer.setup({
+				-- TODO: Prevent opening on wrong filetype
 				cmd = { vim.fn.expand('~/') .. "/.cargo/bin/rustup", "run", "stable", "rust-analyzer" },
-				--on_attach = on_attach,
 				settings = {
 					["rust-analyzer"] = {},
 				},
 			})
 
 			vim.lsp.enable('pyright')
-			vim.lsp.config('pyright', {
-				--on_attach = on_attach,
+			lspconfig.pyright.setup({
 				cmd = {"/opt/homebrew/bin/pyright-langserver", "--stdio"},
 				-- https://github.com/neovim/nvim-lspconfig/issues/500
 				before_init = function(_, config)
@@ -360,8 +362,11 @@ require("lazy").setup({
 				end,
 			})
 
-			vim.lsp.enable('lua_ls')
-			vim.lsp.enable('clangd')
+			lspconfig.lua_ls.setup()
+
+			lspconfig.clangd.setup({
+				cmd = { 'clangd' },
+			})
 
 			-- LSP Configs
 			vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { silent = true, desc = 'Display diagnostics' })
