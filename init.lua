@@ -62,24 +62,23 @@ require("lazy").setup({
 	{ 'NLKNguyen/papercolor-theme',
 		lazy = false,
 		priority = 1000,
-		init = function()
+		-- init = function() end,
+		config = function()
 			vim.g.PaperColor_Theme_Options = {
+				language = {
+					c = { highlight_builtins = 1 },
+					cpp = { highlight_standard_library = 1 },
+				},
 				theme = {
 					default = {
 						allow_bold = 0,
 						allow_italic = 0,
-						override = {
-							-- Change the VertSplit to be a thin blue line without background
-							-- Try to invert the setting in the theme...
-							vertsplit_fg = {'#eeeeee', '255'},
-							vertsplit_bg = {'#005f87', '24'},
-						},
 					},
 				},
 			}
-		end,
-		config = function()
 			vim.cmd.colorscheme('PaperColor')
+			-- Workaround for ugly separator between splits
+			vim.cmd('highlight WinSeparator guifg=#005f87 guibg=#eeeeee')
 		end,
 	},
 
