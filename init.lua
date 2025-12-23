@@ -252,10 +252,13 @@ require("lazy").setup({
 	},
 
 	{ 'nvim-telescope/telescope.nvim',
-		tag = '0.1.5',
+		tag = '0.1.5',  -- v0.1.9 is released and next verified version
 		lazy = true,
 		dependencies = {
 			'nvim-lua/plenary.nvim',
+			{ 'nvim-telescope/telescope-fzf-native.nvim',  -- Native sorting and allows fzf-syntax
+				build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --target install',
+			},
 			{'nvim-telescope/telescope-project.nvim',
 				branch = 'master',
 			},
@@ -289,15 +292,17 @@ require("lazy").setup({
 				},
 			})
 
+			telescope.load_extension('fzf')
 			telescope.load_extension('project')
 			telescope.load_extension('aerial')
 		end,
 		cmd = { 'Telescope' },
 		keys = {
-			{ '<leader> ', '<cmd>Telescope find_files<cr>', desc = 'Telescope find_files' },
+			{ '<leader><space>', '<cmd>Telescope find_files<cr>', desc = 'Telescope find_files' },
 			{ '<leader>bb', '<cmd>Telescope buffers<cr>', desc = 'Telescope buffers' },
 			{ '<leader>mo', '<cmd>Telescope aerial<cr>', desc = 'Telescope overview' },
 			{ '<leader>pp', '<cmd>Telescope project<cr>', desc = 'Telescope projects' },
+			{ '<leader>hh', '<cmd>Telescope help_tags<cr>', desc = 'Telescope helptags' },
 		},
 	},
 
