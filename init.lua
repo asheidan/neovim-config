@@ -317,60 +317,61 @@ require("lazy").setup({
 		},
 	},
 	{ 'neovim/nvim-lspconfig',
-		--tag = 'v0.1.7',
 		version = '2.5.0',
 		dependencies = {
-			-- Neodev has been deprecated
-			-- {'folke/neodev.nvim', enabled = false, opts = {}},  -- LSP settings for neovim config and plugins
+			-- Neodev has been deprecated and replaced by lazydev
 		},
 		config = function()
 			-- Inspirational setup
 			-- https://github.com/AstroNvim/AstroNvim
 
-			local lspconfig = require('lspconfig')
-			local util = require('lspconfig/util')
-
-			local path = util.path
-
 			local function get_python_path(workspace)
 				if vim.env.VIRTUAL_ENV then
-					return path.join(vim.env.VIRTUAL_ENV, 'bin', 'python')
+					return vim.fn.resolve(vim.env.VIRTUAL_ENV .. '/bin/python')
 				end
 
-				local match = vim.fn.glob(path.join(workspace, '.venv'))
+				local match = vim.fn.glob(vim.fn.resolve(workspace .. '/.venv'))
 				if match ~= '' then
-					return path.join(match, 'bin', 'python')
+					return vim.fn.resolve(match .. 'bin/python')
 				end
 
 				return vim.fn.exepath('python3') or vim.fn.exepath('python') or 'python'
 			end
 
-			-- I can't get the new config via nvim 0.11 (vim.lsp.config/.enable) without
-			-- every lsp trying to attach to every file I'm opening. Staying with
-			-- nvim-lspconfig (lspconfig[].setup) for now.
+			-- Article about configuring lsp in nvim 0.11 https://blog.diovani.com/technology/2025/06/13/configuring-neovim-011-lsp.html
+			-- Article about nvim lsp https://vonheikemen.github.io/devlog/tools/neovim-lsp-client-guide/
+			-- Nvim documentation about configure lsp on attach https://neovim.io/doc/user/lsp.html#lsp-attach
 
-			lspconfig.rust_analyzer.setup({
-				-- TODO: Prevent opening on wrong filetype
-				cmd = { vim.fn.expand('~/') .. "/.cargo/bin/rustup", "run", "stable", "rust-analyzer" },
-				settings = {
-					["rust-analyzer"] = {},
-				},
+			vim.lsp.config('*', {
+				root_markers = { '.git', '.jj' },
 			})
 
-			vim.lsp.enable('pyright')
-			lspconfig.pyright.setup({
-				cmd = {"/opt/homebrew/bin/pyright-langserver", "--stdio"},
-				-- https://github.com/neovim/nvim-lspconfig/issues/500
-				before_init = function(_, config)
-					config.settings.python.pythonPath = get_python_path(config.root_dir)
-				end,
-			})
+			local lsp_configs = {
+				{ 'clangd' },
+				{ 'lua_ls', {
+					cmd = ((vim.fn.has('macunix') == 1) and {"/opt/homebrew/bin/lua-language-server"} or nil),
+				} },
+				{ 'pyright', {
+					cmd = ((vim.fn.has('macunix') == 1) and {"/opt/homebrew/bin/pyright-langserver", "--stdio"} or nil),
+					-- https://github.com/neovim/nvim-lspconfig/issues/500
+					before_init = function(_, config)
+						config.settings.python.pythonPath = get_python_path(config.root_dir)
+					end,
+				} },
+				{ 'rust_analyzer', {
+					cmd = { vim.fn.expand('~/') .. ".cargo/bin/rustup", "run", "stable", "rust-analyzer" },
+				} },
+			}
 
-			lspconfig.lua_ls.setup()
+			for _, lsp_config in pairs(lsp_configs) do
+				-- Unpack will probably move to table.unpack in lua 5.2
+				local name, config = unpack(lsp_config)
 
-			lspconfig.clangd.setup({
-				cmd = { 'clangd' },
-			})
+				vim.lsp.enable(name)
+				if config then
+					vim.lsp.config(name, config)
+				end
+			end
 
 			-- LSP Configs
 			vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { silent = true, desc = 'Display diagnostics' })
@@ -404,7 +405,7 @@ require("lazy").setup({
 					vim.keymap.set('n', 'gO', vim.lsp.buf.code_action, table_update({desc='LSP Code Actions'}, bindopts))
 
 					local builtin = require('telescope.builtin')
-					vim.keymap.set('n', 'gl', builtin.lsp_implementations, table_update({ desc = 'LSP Implementations (telescope)' }, bindopts))
+					vim.keymap.set('n', 'gl', builtin.lsp_implementations, table_update({desc = 'LSP Implementations (telescope)'}, bindopts))
 					vim.keymap.set('n', 'gL', builtin.lsp_references, table_update({desc = 'LSP References (Telescope)'}, bindopts))
 					vim.keymap.set('n', 'gd', builtin.lsp_definitions, table_update({desc='LSP Definitions (Telescope)'}, bindopts))
 					vim.keymap.set('n', 'gD', builtin.lsp_type_definitions, table_update({desc='LSP Type Definitions (Telescope'}, bindopts))
