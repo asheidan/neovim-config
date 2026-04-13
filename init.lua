@@ -196,9 +196,13 @@ require("lazy").setup({
 			git = {
 				enable = false,
 			},
+			filters = {
+				dotfiles = true,
+			},
 			renderer = {
 				add_trailing = true,
 				highlight_git = false,
+				group_empty = true,
 				indent_markers = {
 					enable = true,
 					icons = {
