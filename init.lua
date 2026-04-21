@@ -190,7 +190,7 @@ require("lazy").setup({
 	{ 'nicolasgb/jj.nvim',  -- Support for JJ (Jujutsu)
 		enabled = true, -- This is _very_ new so I'll keep an eye on it
 		cmd = { 'J' },
-		config = function() require("jj").setup({}) end,
+		opts = {},
 	},
 
 	{
