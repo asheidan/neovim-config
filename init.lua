@@ -592,8 +592,8 @@ require("lazy").setup({
 
 			-- LSP Configs
 			vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { silent = true, desc = 'Display diagnostics' })
-			vim.keymap.set('n', '[d', function () vim.diagnostic.jump({count=-1, float=true}) end, { silent = true, desc = 'Previous diagnostic' })
-			vim.keymap.set('n', ']d', function () vim.diagnostic.jump({count=1, float=true}) end, { silent = true, desc = 'Next diagnostic' })
+			vim.keymap.set('n', '[d', function() vim.diagnostic.jump({count=1,float=true}) end, { silent = true, desc = 'Previous diagnostic' })
+			vim.keymap.set('n', ']d', function() vim.diagnostic.jump({count=-1,float=true}) end, { silent = true, desc = 'Next diagnostic' })
 
 			vim.api.nvim_create_autocmd('LspAttach', {
 				group = vim.api.nvim_create_augroup('UserLspConfig', {}),
