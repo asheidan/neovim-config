@@ -82,7 +82,60 @@ require("lazy").setup({
 		end,
 	},
 
+	{ 'nvim-lualine/lualine.nvim',
+		enabled = true,
+		opts = {
+			options = {
+				icons_enabled = false,
+			},
+			extensions = {
+				'aerial',
+				'fugitive',
+				'nvim-dap-ui',
+				'nvim-tree',
+				'oil',
+				'quickfix',
+			},
+			sections = {
+				lualine_b = {
+					{'vim.fn.fnamemodify(vim.fn.getcwd(),":~:t")', separator = '/'},  -- project-dir
+					--'vim.fn.expand("%:~:.")',  -- relative path
+					{ 'filename', path = 1,
+						symbols = {
+							modified = '+',
+							readonly = '-',
+						},
+					},  -- relative path
+				},
+				lualine_c = { },  --'branch', },
+
+				lualine_x = {
+					 -- showcmd dosn't work or does something else
+					'selectioncount',
+					{ 'diagnostics',
+						-- TODO: Change the colors to be colored backgrounds
+					},
+					{ 'lsp_status', show_name = false, separator = '' },
+					{'filetype', separator = '' },
+					{'fileformat', fmt = function(str) return (str ~= "unix") and str or "" end, separator = '' },
+					{'encodint', fmt = function(str) return (str ~= "utf-8") and str or "" end },
+				},
+			},
+			inactive_sections = {
+				lualine_c = {
+					{ 'filename', path = 1,
+						symbols = {
+							modified = '+',
+							readonly = '-',
+						},
+					},  -- relative path
+				},
+			},
+		},
+	},
+
 	{ 'itchyny/lightline.vim',
+		enabled = false,
 		dependencies = {
 			{'spywhere/lightline-lsp'},
 		},
