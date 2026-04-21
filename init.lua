@@ -263,6 +263,13 @@ require("lazy").setup({
 				map_key('n', '<leader>hs', gitsigns.stage_hunk, {desc = "Stage hunk"})
 				map_key('n', '<leader>hr', gitsigns.reset_hunk, {desc = "Reset hunk"})
 
+				map_key('v', '<leader>hs', function()
+					gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+				end, {desc = "Stage hunk"})
+				map_key('v', '<leader>hr', function()
+					gitsigns.reset_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+				end, {desc = "Reset hunk"})
+
 				-- Toggles
 				map_key('n', '<leader>tb', gitsigns.toggle_current_line_blame)
 				map_key('n', '<leader>tw', gitsigns.toggle_word_diff)
