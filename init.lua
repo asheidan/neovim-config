@@ -104,6 +104,7 @@ require("lazy").setup({
 	},
 
 	{ 'NLKNguyen/papercolor-theme',
+		-- TODO: Set the cursor to magenta in an after-file
 		lazy = false,
 		priority = 1000,
 		-- init = function() end,
@@ -111,13 +112,20 @@ require("lazy").setup({
 			vim.g.PaperColor_Theme_Options = {
 				language = {
 					c = { highlight_builtins = 1 },
-					cpp = { highlight_standard_library = 1 },
+					cpp = { highlight_standard_library = 0 },
 				},
 				theme = {
 					default = {
-						allow_bold = 0,
-						allow_italic = 0,
+						allow_bold = vim.g.neovide and 1 or 0,
+						allow_italic = vim.g.neovide and 1 or 0,
 					},
+					-- This doesn't work in Neovide and makes no difference in terminal
+					--['default.light'] = {
+					--	override = {
+					--		cursor_fg = { '#eeeeee', '255' },
+					--		cursor_bg = { '#ff00ff', '226' },
+					--	},
+					--},
 				},
 			}
 			vim.cmd.colorscheme('PaperColor')
