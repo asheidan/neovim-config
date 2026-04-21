@@ -54,6 +54,7 @@ vim.opt.cursorline = true
 vim.opt.mouse = "nvi"
 
 vim.opt.wildmode = "full:longest"
+vim.opt.completeopt = "menu,popup,noinsert"
 
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
