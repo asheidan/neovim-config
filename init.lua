@@ -382,6 +382,28 @@ require("lazy").setup({
 		},
 	},
 
+	{ 'jakemason/ouroboros',
+		dependencies = { 'nvim-lua/plenary.nvim' },
+		-- ft = { 'cpp', 'c' },  -- Loading by filetype removes my keybind // 2026-02-26
+		keys = {
+			{ "<leader>ti", "<cmd>Ouroboros<cr>", ft = {'cpp', 'c'}, desc = "Toggle between header/implementation" },
+		},
+		cmd = "Ouroboros",
+		opts = {
+      switch_to_open_pane_if_possible = false,
+			extension_preferences_table = {
+				c = { h = 2, hpp = 1 },
+				h = { c = 2, cpp = 1 },
+				cpp = { hpp = 2, h = 1 },
+				hpp = { cpp = 2, c = 1 },
+				cc = { hh = 2, h = 1},
+				hh = { cc = 2, c = 1},
+				cxx = { hxx = 2, h = 1 },
+				hxx = { cxx = 2, c = 1 },
+			},
+		},
+	},
+
 	{ 'nvim-telescope/telescope.nvim',
 		tag = '0.1.5',
 		lazy = true,
