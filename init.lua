@@ -360,10 +360,13 @@ require("lazy").setup({
 	{ 'lukas-reineke/indent-blankline.nvim',
 		main = 'ibl',
 		keys = {
-			{ '<leader>ig', '<cmd>IBLToggle<cr>', desc = "IndentGuides" },
+			{ '<leader>tg', '<cmd>IBLToggle<cr>', desc = "Toggle Indent guides" },
 		},
 		cmd = "IBLToggle",
+		---@module "ibl"
+		---@type ibl.config
 		opts = {
+			enabled = false,  -- disabled since the key that loads the plugin also enables it
 			scope = {
 				enabled = true,
 				show_start = true,
