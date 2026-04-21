@@ -389,6 +389,7 @@ require("lazy").setup({
 		},
 		config = function()
 			local telescope = require('telescope')
+			local actions = require('telescope.actions')
 
 			telescope.setup({
 				defaults = {
@@ -397,6 +398,18 @@ require("lazy").setup({
 					layout_config = {
 						height = 0.95,
 						width = 0.95,
+					},
+				},
+				pickers = {
+					buffers = {
+						mappings = {
+							n = {
+								["<c-d>"] = actions.delete_buffer,  -- actions.move_to_top
+							},
+							i = {
+								["<c-d>"] = actions.delete_buffer,  -- actions.move_to_top
+							},
+						},
 					},
 				},
 				extensions = {
