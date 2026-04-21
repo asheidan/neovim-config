@@ -205,6 +205,56 @@ require("lazy").setup({
 			{'<leader>gs', '<cmd>Git<cr>', desc = 'Git status' },
 		},
 	},
+	{ 'lewis6991/gitsigns.nvim',
+		tag = "v2.1.0",
+		cmd = { 'Gitsigns' },
+		keys = {
+			{'<leader>ts', function() require('gitsigns').toggle_signs(true) end, desc = "Toggle Git signs"},
+		},
+		opts = {
+			current_line_blame = false,
+
+			on_attach = function(bufnr)
+				local gitsigns = require('gitsigns')
+
+				local function map_key(mode, keys, operation, opts)
+					opts = opts or {}
+					opts.buffer = bufnr
+					vim.keymap.set(mode, keys, operation, opts)
+				end
+
+				map_key('n', '<leader>ts', gitsigns.toggle_signs, {desc = "Toggle Git signs"})
+
+				map_key('n', ']c', function()
+					if vim.wo.diff then
+						vim.cmd.normal({']c', bang = true})
+					else
+						gitsigns.nav_hunk('next')
+					end
+				end, {desc = "Next hunk"})
+				map_key('n', '[c', function()
+					if vim.wo.diff then
+						vim.cmd.normal({'[c', bang = true})
+					else
+						gitsigns.nav_hunk('prev')
+					end
+				end, {desc = "Prev hunk"})
+
+				map_key('n', '<leader>hp', gitsigns.preview_hunk, {desc = "View hunk"})
+				map_key('n', '<leader>hP', gitsigns.preview_hunk_inline, {desc = "View hunk inline"})
+				map_key('n', '<leader>hd', gitsigns.diffthis, {desc = "Diff hunk"})
+
+				-- Actions
+				map_key('n', '<leader>hs', gitsigns.stage_hunk, {desc = "Stage hunk"})
+				map_key('n', '<leader>hr', gitsigns.reset_hunk, {desc = "Reset hunk"})
+
+				-- Toggles
+				map_key('n', '<leader>tb', gitsigns.toggle_current_line_blame)
+				map_key('n', '<leader>tw', gitsigns.toggle_word_diff)
+			end,
+		},
+	},
+
 	{ 'tpope/vim-surround' },
 	{ 'tpope/vim-commentary',
 		--config = function()
