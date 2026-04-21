@@ -30,8 +30,12 @@ if vim.g.neovide then
 	vim.keymap.set('n', zoom_key..'-->', function() AdjustFontSize(-1) end )
 	vim.keymap.set('n', zoom_key..'-0>', function() SetFontSize(9) end )
 
-	vim.opt.title = true
 end
+
+vim.opt.title = true
+-- Default is similar to vim.opt.titlestring = '%t%( %M%)%( (%{expand("%:~:h")})%)%a - Nvim'
+-- Nvim - ~/.config / nvim/init.lua
+vim.opt.titlestring = "Nvim - %{fnamemodify(getcwd(), ':~:s_.*/\\([^/]\\+/[^/]\\+\\)_\\1_')} / %{expand('%')}%( %M%)"
 
 vim.opt.cursorline = true
 
