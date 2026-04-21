@@ -2,13 +2,25 @@ vim.opt.guifont = 'ProFontIIx:h9'
 --vim.opt.guifont = 'Fira Code:h11'
 vim.opt.background = 'light'
 
-if vim.g.neovide then
-	vim.g.neovide_padding_left = 2
-	vim.g.neovide_padding_right = 2
-	vim.g.neovide_padding_top = 2
-	vim.g.neovide_padding_bottom = 2
+local terminal_vim = "vim" == vim.v.argv[1]
+if terminal_vim then
+	vim.opt.background = 'dark'
+else
+	vim.opt.background = 'light'
+end
 
-	vim.g.neovide_refresh_rate = 15
+-- Temporarily set this until i fix neovide fonts
+vim.opt.termguicolors = true
+
+if vim.g.neovide then
+	-- Adding padding seems to cause issues where the actual text isn't aligned on
+	-- pixels which causes all text in the window to look blurry.
+	vim.g.neovide_padding_left = 0
+	vim.g.neovide_padding_right = 0
+	vim.g.neovide_padding_top = 0
+	vim.g.neovide_padding_bottom = 0
+
+	-- vim.g.neovide_refresh_rate = 60  -- This is only used when vsync is turned off
 	vim.g.neovide_refresh_rate_idle = 1
 
 	local guifontsize = 9
@@ -110,7 +122,7 @@ require("lazy").setup({
 	{ 'NLKNguyen/papercolor-theme',
 		-- TODO: Set the cursor to magenta in an after-file
 		lazy = false,
-		priority = 1000,
+		priority = terminal_vim and nil or 1000,
 		-- init = function() end,
 		config = function()
 			vim.g.PaperColor_Theme_Options = {
@@ -132,9 +144,11 @@ require("lazy").setup({
 					--},
 				},
 			}
-			vim.cmd.colorscheme('PaperColor')
-			-- Workaround for ugly separator between splits
-			vim.cmd('highlight WinSeparator guifg=#005f87 guibg=#eeeeee')
+			if not terminal_vim then
+				vim.cmd.colorscheme('PaperColor')
+				-- Workaround for ugly separator between splits
+				vim.cmd('highlight WinSeparator guifg=#005f87 guibg=#eeeeee')
+			end
 		end,
 	},
 
@@ -664,8 +678,12 @@ require("lazy").setup({
 	-- Other colorschemes
 	{ 'morhetz/gruvbox',
 		lazy = true,
+		priority = terminal_vim and 1000 or nil,
 		init = function()
 			vim.g.gruvbox_bold = 0;
+			if terminal_vim then
+				vim.cmd.colorscheme('gruvbox')
+			end
 		end,
 	},
 	{ 'romgrk/doom-one.vim', lazy = true },
