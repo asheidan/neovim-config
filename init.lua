@@ -629,9 +629,10 @@ require("lazy").setup({
 					-- vim.bo[ev.buf].omnifunc = 'v:lua.lim.lsp.omnifunc'
 
 					-- Buffer local mappings.
-					--vim.keymap.set('n', 'gi', vim.lsp.buf.signature_help, bindopts)
-					vim.keymap.set('n', 'go', vim.lsp.buf.hover, table_update({desc='LSP Hover'}, bindopts))
+					-- vim.keymap.set('n', 'gi', vim.lsp.buf.signature_help, bindopts)
+					-- vim.keymap.set('n', 'go', vim.lsp.buf.hover, table_update({desc='LSP Hover'}, bindopts))
 					vim.keymap.set('n', 'gO', vim.lsp.buf.code_action, table_update({desc='LSP Code Actions'}, bindopts))
+					-- TODO: If 0.11 doesn't fix issue with no mapping for vim.lsp.buf.rename add manual mapping
 
 					local builtin = require('telescope.builtin')
 					vim.keymap.set('n', 'gl', builtin.lsp_implementations, table_update({ desc = 'LSP Implementations (telescope)' }, bindopts))
