@@ -404,6 +404,17 @@ require("lazy").setup({
 		},
 	},
 
+	{ 'jameswolensky/marker-groups.nvim',
+		-- TODO: Fix delay caused by Telescope being loaded at the same time
+		dependencies = { 'nvim-lua/plenary.nvim' },
+		opts = {
+			keymaps = {
+				prefix = '<leader>n',
+			},
+			picker = 'telescope',
+		},
+	},
+
 	{ 'nvim-telescope/telescope.nvim',
 		tag = '0.1.5',
 		lazy = true,
