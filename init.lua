@@ -567,7 +567,8 @@ require("lazy").setup({
 			-- every lsp trying to attach to every file I'm opening. Staying with
 			-- nvim-lspconfig (lspconfig[].setup) for now.
 
-			lspconfig.rust_analyzer.setup({
+			vim.lsp.enable('rust_analyzer')
+			vim.lsp.config('rust_analyzer', {
 				-- TODO: Prevent opening on wrong filetype
 				cmd = { vim.fn.expand('~/') .. "/.cargo/bin/rustup", "run", "stable", "rust-analyzer" },
 				settings = {
@@ -575,20 +576,30 @@ require("lazy").setup({
 				},
 			})
 
-			vim.lsp.enable('pyright')
-			lspconfig.pyright.setup({
-				cmd = {"/opt/homebrew/bin/pyright-langserver", "--stdio"},
-				-- https://github.com/neovim/nvim-lspconfig/issues/500
-				before_init = function(_, config)
-					config.settings.python.pythonPath = get_python_path(config.root_dir)
-				end,
+			--vim.lsp.enable('pyright')
+			-- lspconfig.pyright.setup({
+			-- 	cmd = {"/opt/homebrew/bin/pyright-langserver", "--stdio"},
+			-- 	-- https://github.com/neovim/nvim-lspconfig/issues/500
+			-- 	before_init = function(_, config)
+			-- 		config.settings.python.pythonPath = get_python_path(config.root_dir)
+			-- 	end,
+			-- })
+			-- TODO: See if Rope needs extra config to work
+			vim.lsp.enable('pylsp')
+
+			vim.lsp.enable('lua_ls')
+
+			vim.lsp.enable('clangd')
+			vim.lsp.config('clangd', {
+				cmd = { 'clangd-20', '--background-index', '--clang-tidy' },
 			})
 
-			lspconfig.lua_ls.setup()
+			lspconfig.protols.setup({})
 
-			lspconfig.clangd.setup({
-				cmd = { 'clangd' },
-			})
+			-- vim.lsp.enable('bitbake_language_server')  -- 0.0.15 is broken, 0.0.16 is not available in pypi
+
+			-- TODO: Add bashls
+			-- TODO: Add bitbake-language-server
 
 			-- LSP Configs
 			vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { silent = true, desc = 'Display diagnostics' })
