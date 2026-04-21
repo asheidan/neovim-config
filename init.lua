@@ -205,6 +205,13 @@ require("lazy").setup({
 			{'<leader>gs', '<cmd>Git<cr>', desc = 'Git status' },
 		},
 	},
+	{ 'idanarye/vim-merginal',  -- Branch handling based on fugitive
+		cmd = 'Merginal',
+		dependencies = { 'tpope/vim-fugitive' },
+		keys = {
+			{'<leader>gb', '<cmd>Merginal<cr>', desc = 'Git branches (Merginal)' },
+		},
+	},
 	{ 'lewis6991/gitsigns.nvim',
 		tag = "v2.1.0",
 		cmd = { 'Gitsigns' },
