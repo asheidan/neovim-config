@@ -428,8 +428,10 @@ require("lazy").setup({
 					},
 					project = {
 						base_dirs = {
-							'~/Documents/Projects',
+							{ path = '~/Documents/Projects', max_depth = 2 },
 						},
+						order_by = 'asc',
+						sync_with_nvim_tree = true,
 					},
 				},
 			})
