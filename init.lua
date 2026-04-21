@@ -754,6 +754,18 @@ require("lazy").setup({
 		dependencies = { 'nvim-treesitter/nvim-treesitter' },
 	},
 
+	{  -- Integration with Zeal
+		'KabbAmine/zeavim.vim',
+		init = function()
+			vim.g.zv_disable_mapping = true
+			vim.g.zv_keep_focus = true  -- Need wmctrl installed
+		end,
+		keys = {
+			{ "<leader>mK", "<Plug>Zeavim", mode="n", desc = "Show documentation in Zeal" },
+			{ "<leader>mK", "<Plug>ZVVisSelection", mode="v", desc = "Show documentation in Zeal" },
+		},
+	},
+
 	-- Other colorschemes
 	{ 'morhetz/gruvbox',
 		lazy = true,
