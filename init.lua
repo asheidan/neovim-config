@@ -528,6 +528,7 @@ require("lazy").setup({
 					-- Support for inlay_hint was added in 0.10
 					if vim.fn.has("nvim-0.10") == 1 then
 						vim.lsp.inlay_hint.enable()
+						vim.keymap.set('n', '<leader>th', function () vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end, { silent = true, desc = 'Toggle inlay Hints' })
 					end
 
 					local function table_update(target, source)
