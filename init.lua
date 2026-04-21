@@ -59,6 +59,50 @@ end
 vim.opt.runtimepath:prepend(lazypath)
 
 require("lazy").setup({
+	{ 'folke/noice.nvim',
+		-- TODO: Fix showcmd
+		event = 'VeryLazy',
+		opts = {
+			cmdline = {
+				format = {
+					cmdline = { icon = ":" },
+					search_down = { icon = "/" },
+					search_up = { icon = "?" },
+					-- TODO: What is filter?
+					filter = { icon = "$" },
+					lua = { icon = ">" },
+					help = { icon = "H" },
+				},
+			},
+			format = {  -- Format for notifications
+				level = {
+					-- Disabling icons because they look strange, at least in the terminal
+					error = "",
+					warn = "",
+					info = "",
+				},
+			},
+			presets = {
+				bottom_search = true,
+				-- command_palette = true,  -- I don't like the command moved to the top of the window
+			},
+		},
+		-- TODO: Fix highlights to be less jarring
+		-- Probably needs NoiceCmdlineIcon, NoiceCmdlinePopupBorder
+		-- to be connected to something else than DiagnosticSignInfo.
+		-- But can't do it in config without also manually calling setup.
+		-- config = function()
+		-- 	vim.cmd [[
+		-- 		highlight link NoiceCmdlineIcon NoiceCmdline
+		-- 		highlight link NoiceCmdlinePopupBorder NoiceCmdline
+		-- 	]]
+		-- end,
+		dependencies = {
+			'MunifTanjim/nui.nvim',
+			'rcarriga/nvim-notify',
+		},
+	},
+
 	{ 'NLKNguyen/papercolor-theme',
 		lazy = false,
 		priority = 1000,
