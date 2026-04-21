@@ -284,18 +284,41 @@ require("lazy").setup({
 	-- Nvim Tree seems faster than Neotree (for now)
 	-- TODO: Check CHADTree https://github.com/ms-jpq/chadtree
 	{ 'nvim-tree/nvim-tree.lua',
+		-- TODO: Fix highlight groups (undercurl is just bad (NvimTreeSymlink)
 		tag = 'v1.0',
 		keys = {
 			{"<F2>", "<CMD>NvimTreeToggle<CR>", desc = "NvimTree" },
+			{"<S-F2>", "<CMD>NvimTreeFindFile<CR>", desc = "Find file in NvimTree" },
+			{"<LEADER>ff", function() require('nvim-tree.api').tree.find_file({open=true, focus=false}) end, desc = "Find file in NvimTree" },
 		},
 		cmd = {"NvimTreeOpen", "NvimTreeToggle"},
 		opts = {
 			git = {
 				enable = false,
 			},
+			view = {
+				width = 45,
+			},
+			filters = {
+				dotfiles = true,
+			},
+			modified = { enable = true },
+			diagnostics = {
+				enable = true,
+				show_on_dirs = true,
+				show_on_open_dirs = true,
+				icons = {
+					hint = "h",
+					info = "i",
+					warning = "w",
+					error = "e",
+				},
+			},
 			renderer = {
 				add_trailing = true,
 				highlight_git = false,
+				highlight_modified = 'all',  -- Value can be `"none"`, `"icon"`, `"name"` or `"all"`
+				symlink_destination = false,
 				indent_markers = {
 					enable = true,
 					icons = {
