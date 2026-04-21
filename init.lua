@@ -523,6 +523,8 @@ require("lazy").setup({
 	{ -- COQ Completion
 		'ms-jpq/coq_nvim',
 		branch = 'coq',
+		-- TODO: Hitta en commit som funkar
+		commit = 'a63d28a9aa59c20a503ce38608fb6bc7cb3842f4',
 		lazy = true,
 		cmd = {'COQnow', 'COQhelp'},
 		dependencies = {
