@@ -382,6 +382,9 @@ require("lazy").setup({
 			{'nvim-telescope/telescope-project.nvim',
 				branch = 'master',
 			},
+			{ 'nvim-telescope/telescope-fzf-native.nvim',
+				build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --target install'
+			},
 			-- 'stevearc/aerial.nvim',  -- For Aerial, installation and config defined separately
 		},
 		config = function()
@@ -404,6 +407,12 @@ require("lazy").setup({
 							-- yaml = false,
 						},
 					},
+					fzf = {
+						fuzzy = true,
+						override_generic_sorter = true,
+						override_file_sorter = true,
+						case_mode = 'smart_case',  -- default
+					},
 					project = {
 						base_dirs = {
 							'~/Documents/Projects',
@@ -412,6 +421,7 @@ require("lazy").setup({
 				},
 			})
 
+			telescope.load_extension('fzf')
 			telescope.load_extension('project')
 			telescope.load_extension('aerial')
 		end,
