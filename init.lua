@@ -528,6 +528,9 @@ require("lazy").setup({
 		dependencies = {
 			{ 'ms-jpq/coq.artifacts', branch = 'artifacts' },
 		},
+		init = function()
+			vim.g.coq_settings = { ["display.preview.positions"] = { east = 4, north = 3, south = nil, west = nil } }
+		end,
 	},
 	{ 'neovim/nvim-lspconfig',
 		--tag = 'v0.1.7',
