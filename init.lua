@@ -217,8 +217,14 @@ require("lazy").setup({
 		--end,
 	},
 
-	-- Nvim Tree seems faster than Neotree (for now)
 	-- TODO: WTF is Oil.nvim?
+	{ 'stevearc/oil.nvim',
+		opts = {
+			default_file_explorer = true,  -- Replace netrw
+		},
+	},
+
+	-- Nvim Tree seems faster than Neotree (for now)
 	-- TODO: Check CHADTree https://github.com/ms-jpq/chadtree
 	{ 'nvim-tree/nvim-tree.lua',
 		tag = 'v1.0',
