@@ -454,6 +454,7 @@ require("lazy").setup({
 			})
 		end,
 	},
+	-- { 'nvim-treesitter/nvim-treesitter-textobjects' },  -- Look at this in the future when this actually works (2025-11-20)
 	{ -- File structure / overview via Aerial
 		'stevearc/aerial.nvim',
 		version = '2.5.0',
