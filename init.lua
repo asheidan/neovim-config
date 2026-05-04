@@ -336,6 +336,49 @@ require("lazy").setup({
 		},
 	},
 
+	-- TODO: Take a look at a plugin that makes it easier to integrate with Obsidian
+	--       - Telekasten.nvim - https://github.com/nvim-telekasten/telekasten.nvim
+	--       - Obsidian.nvim   - https://github.com/obsidian-nvim/obsidian.nvim
+
+	{ 'jameswolensky/marker-groups.nvim',
+		--dependencies = { 'nvim-lua/plenary.nvim' },
+		version = "v1.1.0",
+		lazy = true,
+		cmd = {
+			'MarkerGroupsCreate',
+			'MarkerGroupsList',
+			'MarkerGroupsSelect',
+			'MarkerGroupsView',
+			'MarkerGroupsRename',
+			'MarkerGroupsDelete',
+
+			'MarkerAdd',
+			'MarkerRemove',
+			'MarkerList',
+		},
+		keys = {
+			{ '<leader>mmv', desc='Toggle drawer marker viewer' },
+
+			{ "<leader>mma", mode = { "n", "v" }, desc = "Add marker" },
+			{ "<leader>mme", desc = "Edit marker at cursor" },
+			{ "<leader>mmd", desc = "Delete marker at cursor" },
+			{ "<leader>mml", desc = "List markers in buffer" },
+			{ "<leader>mmi", desc = "Show marker at cursor" },
+
+			{ "<leader>mmgc", desc = "Create marker group" },
+			{ "<leader>mmgs", desc = "Select marker group" },
+			{ "<leader>mmgl", desc = "List marker groups" },
+			{ "<leader>mmgr", desc = "Rename marker group" },
+			{ "<leader>mmgd", desc = "Delete marker group" },
+			{ "<leader>mmgi", desc = "Show active group info" },
+			{ "<leader>mmgb", desc = "Create group from git branch" },
+		},
+		opts = {
+			picker = 'vim',
+			keymaps = { prefix = "<leader>mm" },
+		},
+	},
+
 	-- LSP/Completion
 	{ -- COQ Completion
 		'ms-jpq/coq_nvim',
