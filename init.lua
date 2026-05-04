@@ -146,6 +146,12 @@ require("lazy").setup({
 		end,
 	},
 
+	-- { 'LhKipp/nvim-nu',
+	-- 	enabled = false, -- This doesn't seem to work, TSInstall fails
+	-- 	--build = ':TSInstall nu',
+	-- 	opts = {},
+	-- },
+
 	-- Feature-adding plugins
 
 	{ 'NeogitOrg/neogit',  -- Git-based on magit
