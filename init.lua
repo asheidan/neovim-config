@@ -1,6 +1,9 @@
 vim.opt.background = 'light'
 
 if vim.g.neovide then
+	-- fonts set in ~/.config/neovide/config.toml
+	vim.api.nvim_set_keymap('n', '<leader>fP', '<cmd>e $HOME/.config/neovide/config.toml<cr>', { silent = true, desc = 'Edit neovide.toml' })
+
 	vim.g.neovide_padding_left = 2
 	vim.g.neovide_padding_right = 2
 	vim.g.neovide_padding_top = 2
