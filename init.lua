@@ -83,6 +83,7 @@ require("lazy").setup({
 		end,
 	},
 
+	-- { 'Bekaboo/dropbar.nvim', opts={bar={enable=false}} },  -- Breadcrumbs at the top of the window, seems unstable
 	{ 'itchyny/lightline.vim',
 		dependencies = {
 			{'spywhere/lightline-lsp'},
