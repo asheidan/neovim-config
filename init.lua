@@ -238,6 +238,24 @@ require("lazy").setup({
 		},
 	},
 
+	-- Undo-tree
+	{ "y3owk1n/time-machine.nvim",
+		-- https://github.com/y3owk1n/time-machine.nvim
+		enabled = false,
+		version = "*", -- Use tagged releases
+		init = function()  -- Always run
+			vim.opt.undofile = false  -- Don't persist undo-tree
+			-- TODO: What to do with the undodir? The default seems OK for me...
+			--vim.opt.undodir = vim.fn.expand("~/.undodir") -- suggested by author
+		end,
+		opts = {
+			-- your configuration comes here
+			-- or leave it empty to use the default settings
+			-- refer to the configuration section below
+			ignore_filesize = 512 * 1024,  -- Do not store undo for larger than 512kB
+		},
+	},
+
 	{ 'folke/which-key.nvim',
 		init = function()
 			vim.opt.timeout = true
