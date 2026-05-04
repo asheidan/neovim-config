@@ -1,5 +1,3 @@
-vim.opt.guifont = 'ProFontIIx:h9'
---vim.opt.guifont = 'Fira Code:h11'
 vim.opt.background = 'light'
 
 if vim.g.neovide then
@@ -31,6 +29,9 @@ if vim.g.neovide then
 	vim.keymap.set('n', zoom_key..'-0>', function() SetFontSize(9) end )
 
 	vim.opt.title = true
+else
+	vim.opt.guifont = 'ProFontIIx Nerd Font,ProFontIIx:h9'
+	--vim.opt.guifont = 'Fira Code:h11'
 end
 
 vim.opt.cursorline = true
