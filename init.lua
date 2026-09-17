@@ -234,6 +234,10 @@ require("lazy").setup({
 		cmd = { 'DirDiff' },
 	},
 
+	{
+		'rhysd/conflict-marker.vim',
+	},
+
 	{ 'tpope/vim-fugitive',
 		lazy = true,
 		cmd = { "Git" },
