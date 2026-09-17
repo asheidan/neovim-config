@@ -163,12 +163,18 @@ require("lazy").setup({
 				icons_enabled = false,
 			},
 			extensions = {
-				'aerial',
+				--'aerial',
 				'fugitive',
 				'nvim-dap-ui',
 				'nvim-tree',
 				'oil',
 				'quickfix',
+				{ -- symbols window
+					sections = {
+						lualine_a = { 'filetype' },
+					},
+					filetypes = { 'SymbolsSidebar' },
+				},
 			},
 			sections = {
 				lualine_b = {
@@ -420,7 +426,7 @@ require("lazy").setup({
 		},
 		cmd = "Ouroboros",
 		opts = {
-      switch_to_open_pane_if_possible = false,
+			switch_to_open_pane_if_possible = false,
 			extension_preferences_table = {
 				c = { h = 2, hpp = 1 },
 				h = { c = 2, cpp = 1 },
@@ -487,13 +493,13 @@ require("lazy").setup({
 					},
 				},
 				extensions = {
-					aerial = {
-						show_nesting = {
-							["_"] = true,  -- default
-							-- json = false,
-							-- yaml = false,
-						},
-					},
+					--aerial = {
+					--	show_nesting = {
+					--		["_"] = true,  -- default
+					--		-- json = false,
+					--		-- yaml = false,
+					--	},
+					--},
 					fzf = {
 						fuzzy = true,
 						override_generic_sorter = true,
@@ -512,13 +518,14 @@ require("lazy").setup({
 
 			telescope.load_extension('fzf')
 			telescope.load_extension('project')
-			telescope.load_extension('aerial')
+			--telescope.load_extension('aerial')
 		end,
 		cmd = { 'Telescope' },
 		keys = {
 			{ '<leader><space>', '<cmd>Telescope find_files<cr>', desc = 'Telescope find_files' },
 			{ '<leader>bb', '<cmd>Telescope buffers<cr>', desc = 'Telescope buffers' },
-			{ '<leader>mo', '<cmd>Telescope aerial<cr>', desc = 'Telescope overview' },
+			--{ '<leader>mo', '<cmd>Telescope aerial<cr>', desc = 'Telescope overview' },
+			{ '<leader>mo', '<cmd>Telescope lsp_document_symbols<cr>', desc = 'Telescope overview' },
 			{ '<leader>pp', '<cmd>Telescope project<cr>', desc = 'Telescope projects' },
 			{ '<leader>hh', '<cmd>Telescope help_tags<cr>', desc = 'Telescope helptags' },
 		},
@@ -754,6 +761,7 @@ require("lazy").setup({
 	},
 	{ -- File structure / overview via Aerial
 		'stevearc/aerial.nvim',
+		enabled = false,
 		version = '2.5.0',
 		cmd = { 'AerialToggle' },
 		keys = {
@@ -774,6 +782,31 @@ require("lazy").setup({
 			-- },
 		},
 		dependencies = { 'nvim-treesitter/nvim-treesitter' },
+	},
+	{
+		'oskarrrrrrr/symbols.nvim',
+		dependencies = {
+			'onsails/lspkind.nvim', -- Needed for FancySymbols
+		},
+		version = '0.4.0',
+		cmd = { 'Symbols', 'SymbolsToggle' },
+		keys = {
+			{'<F4>', '<cmd>SymbolsToggle<cr>', desc = "Symbols overview" },
+		},
+		config = function()
+			local opts = {
+				sidebar = {
+					cursor_follow = true,
+				},
+				preview = {
+					keymaps = { ['<cr>'] = "goto-code" },
+				},
+			}
+
+			local symbols = require('symbols')
+			local recipes = require('symbols.recipes')
+			symbols.setup( recipes.FancySymbols, opts)
+		end,
 	},
 
 	{  -- Integration with Zeal
