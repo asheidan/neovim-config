@@ -54,7 +54,7 @@ vim.opt.cursorline = true
 vim.opt.mouse = "nvi"
 
 vim.opt.wildmode = "full:longest"
-vim.opt.completeopt = "menu,popup,noinsert"
+vim.opt.completeopt = "menu,menuone,popup,noselect" -- noinsert
 
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
@@ -100,6 +100,12 @@ require("lazy").setup({
 					error = "",
 					warn = "",
 					info = "",
+				},
+			},
+			lsp = {
+				override = {
+					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+					["vim.lsp.util.stylize_markdown"] = true,
 				},
 			},
 			presets = {
@@ -530,6 +536,7 @@ require("lazy").setup({
 		branch = 'coq',
 		-- TODO: Hitta en commit som funkar
 		commit = 'a63d28a9aa59c20a503ce38608fb6bc7cb3842f4',
+		enabled = false,
 		lazy = true,
 		cmd = {'COQnow', 'COQhelp'},
 		dependencies = {
@@ -538,6 +545,29 @@ require("lazy").setup({
 		init = function()
 			vim.g.coq_settings = { ["display.preview.positions"] = { east = 4, north = 3, south = nil, west = nil } }
 		end,
+	},
+	{ 'saghen/blink.cmp',
+		version = "1.*",
+		--dependencies = { 'rafamadriz/friendly-snippets' },
+
+		--@module 'blink.cmp'
+		--@type blink.cmp.Config
+		opts = {
+			keymap = {
+				preset = 'default',
+
+				['<C-k>'] = { 'show_documentation', 'hide_documentation', 'fallback' },
+			},
+			appearance = {
+				nerd_font_variant = 'mono',
+			},
+			completion = { documentation = { auto_show = false, auto_show_delay_ms = 500 } },
+			sources = {
+				default = { 'lsp', 'path', 'snippets', 'buffer' },
+			},
+			fuzzy = {implementation = "prefer_rust_with_warning"},
+		},
+		opts_extend = { "sources.default" },
 	},
 	{ 'neovim/nvim-lspconfig',
 		version = '2.5.0',
@@ -634,6 +664,16 @@ require("lazy").setup({
 
 						return target;
 					end
+
+					-- Native LSP-Completion
+					-- vim.lsp.completion.enable(true, ev.data.client_id, ev.buf, {
+					-- 	autotrigger = true,
+					-- 	convert = function(item)
+					-- 		return { abbr = item.label:gsub("%b()", "") }
+					-- 	end,
+					-- })
+					-- vim.keymap.set("i", "<C-Space>", vim.lsp.completion.get,
+					-- 	{ desc = "trigger autocompletion", buffer = ev.buf })
 
 					-- Enable completion triggered by <C-x><C-o>
 					-- vim.bo[ev.buf].omnifunc = 'v:lua.lim.lsp.omnifunc'
