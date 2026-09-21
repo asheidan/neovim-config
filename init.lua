@@ -978,6 +978,10 @@ vim.api.nvim_set_keymap(
 	{ silent = true }
 )
 
+-- Appearently I can't type ':qa'
+vim.cmd("cabbrev Qa qa")
+vim.cmd("cabbrev QA qa")
+
 vim.api.nvim_set_keymap("n", "<LEADER>fp", "<CMD>e $MYVIMRC<CR>", { silent = true, desc = "Edit $MYVIMRC" })
 
 vim.opt.foldmethod = "marker"
