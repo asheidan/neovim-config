@@ -368,7 +368,7 @@ require("lazy").setup({
 	{
 		"nvim-tree/nvim-tree.lua",
 		-- TODO: Fix highlight groups (undercurl is just bad (NvimTreeSymlink)
-		tag = "v1.0",
+		tag = "v1.18.0",
 		keys = {
 			{ "<F2>", "<CMD>NvimTreeToggle<CR>", desc = "NvimTree" },
 			{ "<S-F2>", "<CMD>NvimTreeFindFile<CR>", desc = "Find file in NvimTree" },
@@ -381,12 +381,14 @@ require("lazy").setup({
 			},
 		},
 		cmd = { "NvimTreeOpen", "NvimTreeToggle" },
+		---@module "nvim-tree"
+		---@type nvim_tree.config
 		opts = {
 			git = {
 				enable = false,
 			},
 			view = {
-				width = 45,
+				width = { min = 25, max = 45 },
 			},
 			filters = {
 				dotfiles = true,
