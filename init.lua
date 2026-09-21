@@ -917,18 +917,53 @@ require("lazy").setup({
 	},
 	{ -- File structure / overview via Aerial
 		"stevearc/aerial.nvim",
-		version = "2.5.0",
-		cmd = { "AerialToggle" },
+		branch = "nvim-0.9",
+		cmd = { "AerialToggle", "AerialNavToggle" },
 		keys = {
 			{ "<F4>", "<cmd>AerialToggle!<cr>", desc = "Aerial overview" },
+
+			-- Neovide interprets Shift-F4 "correctly"
+			{ "<S-F4>", "<cmd>AerialNavToggle<cr>", desc = "Aerial navigation" },
+			-- Shift F4 is F16 in the Terminal on my macbook
+			{ "<F16>", "<cmd>AerialNavToggle<cr>", desc = "Aerial navigation" },
 		},
 		opts = {
 			backends = { "lsp", "treesitter", "markdown" },
 			layout = {
-				default_direction = "prefer_right",
+				default_direction = "float", -- "prefer_right",
 				placement = "edge",
+				max_width = 40,
+				width = nil,
+				min_width = 15,
+				resize_to_content = true,
 			},
 			show_guides = true,
+			float = {
+				relative = "editor",
+				override = function(configuration)
+					-- Implementation from
+					-- https://github.com/stevearc/aerial.nvim/issues/107
+					local padding = 1
+					local position = vim.api.nvim_win_get_position(0)
+					local row_index, col_index = 1, 2
+					configuration.anchor = "NE"
+					configuration.row = position[row_index] + padding
+					configuration.col = position[col_index] + vim.api.nvim_win_get_width(0) - padding
+					-- configuration.col = vim.o.columns - padding
+
+					return configuration
+				end,
+			},
+			nav = {
+				win_opts = {
+					winblend = 0, -- No transparency
+				},
+				keymaps = {
+					["<Esc>"] = "actions.close",
+					["<C-g>"] = "actions.close",
+					["q"] = "actions.close",
+				},
+			},
 			-- guides = {
 			-- 	mid_item = "├ ",
 			-- 	last_item = "└ ",
@@ -936,7 +971,7 @@ require("lazy").setup({
 			-- 	whitespace = "  ",
 			-- },
 		},
-		dependencies = { "nvim-treesitter/nvim-treesitter" },
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
 	},
 
 	{ -- Integration with Zeal
