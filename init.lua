@@ -87,6 +87,14 @@ vim.opt.runtimepath:prepend(lazypath)
 
 require("lazy").setup({
 	{
+		dir = "~/.config/nvim/my-plugins/tagstack",
+		cmd = { "TagStackToggle" },
+		keys = {
+			{ "<leader>tö", "<cmd>TagStackToggle<cr>", desc = "Toggle Tagstack" },
+			{ "<F5>", "<cmd>TagStackToggle<cr>", desc = "Toggle Tagstack" },
+		},
+	},
+	{
 		"folke/noice.nvim",
 		-- TODO: Fix showcmd
 		event = "VeryLazy",
