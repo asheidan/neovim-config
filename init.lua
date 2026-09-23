@@ -494,6 +494,18 @@ require("lazy").setup({
 	{
 		"jameswolensky/marker-groups.nvim",
 		-- TODO: Fix delay caused by Telescope being loaded at the same time
+		cmd = { "MarkerList", "MarkerGroupdList", "MarkerGroupsSelect" },
+		keys = {
+			{
+				"<leader>n",
+				function()
+					-- Even an empty function causes the plugin to be loaded
+					--local keycodes = vim.api.nvim_replace_termcodes("<leader>n", true, false, true)
+					--vim.api.nvim_feedkeys(keycodes, "n", false)
+				end,
+				desc = "MarkerGroups",
+			},
+		},
 		dependencies = { "nvim-lua/plenary.nvim" },
 		opts = {
 			keymaps = {
