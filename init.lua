@@ -940,6 +940,27 @@ require("lazy").setup({
 				resize_to_content = true,
 			},
 			show_guides = true,
+			filter_kind = {
+				-- :help SymbolKind
+				rust = {
+					"Class",
+					"Constant",
+					"Constructor",
+					"Enum",
+					"Field",
+					"File",
+					"Function",
+					"Interface",
+					"Method",
+					"Module",
+					"Namespace",
+					"Object",
+					"Package",
+					"Property",
+					"Struct",
+					"TypeParameter",
+				},
+			},
 			float = {
 				relative = "editor",
 				override = function(configuration)
