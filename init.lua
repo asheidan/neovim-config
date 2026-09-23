@@ -505,7 +505,7 @@ require("lazy").setup({
 
 	{
 		"nvim-telescope/telescope.nvim",
-		tag = "0.1.5", -- v0.1.9 is released and next verified version
+		tag = "v0.1.9", -- v0.1.9 is released and next verified version
 		lazy = true,
 		dependencies = {
 			"nvim-lua/plenary.nvim",
