@@ -828,6 +828,7 @@ require("lazy").setup({
 	--},
 	{
 		"rcarriga/nvim-dap-ui",
+		cmd = { "DapNew", "DapContinue" },
 		dependencies = {
 			"mfussenegger/nvim-dap",
 			"theHamsta/nvim-dap-virtual-text",
