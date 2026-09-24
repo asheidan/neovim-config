@@ -95,14 +95,26 @@ local function update_buf_content(ev)
 		return
 	end
 
+	local highlight_namespace = vim.api.nvim_create_namespace(AUTOGROUP_NAME)
+
 	-- Stack content
 	local data = vim.fn.gettagstack(0)
 	-- vim.print(data)
 
 	local lines = {}
+	local extmark_locations = {}
 	for _, item in pairs(data["items"]) do
-		vim.list_extend(lines, format_item(item))
-		-- This is probably where extmarks needs to be added to indicate which symbol we jumped to
+		local item_info = format_item(item)
+		vim.list_extend(lines, item_info)
+
+		-- TODO: Try to find a match for the tagname within "tagname length" from the col location in item.from.
+		local tagname_length = string.len(item.tagname)
+		local from_pos = math.max(0, item.from[1] - tagname_length)
+		local match = vim.fn.match(item_info[1], item.tagname, from_pos)
+
+		if match >= 0 then
+			table.insert(extmark_locations, { #lines - 2, match, tagname_length })
+		end
 	end
 
 	-- New content
@@ -111,6 +123,17 @@ local function update_buf_content(ev)
 	-- Remove any old lines still left
 	if vim.api.nvim_buf_line_count(state.floating.buf) > 1 then
 		vim.fn.deletebufline(state.floating.buf, #lines + 1, "$")
+	end
+
+	-- This is probably where extmarks needs to be added to indicate which symbol we jumped to
+	for _, extmark in pairs(extmark_locations) do
+		vim.api.nvim_buf_set_extmark(
+			state.floating.buf,
+			highlight_namespace,
+			extmark[1],
+			extmark[2],
+			{ end_col = extmark[2] + extmark[3], hl_group = "Underlined" }
+		)
 	end
 end
 
