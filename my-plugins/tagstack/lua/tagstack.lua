@@ -44,6 +44,9 @@ local function create_floating_window(opts)
 
 		style = "minimal", -- No borders of extra ui elements
 		border = "rounded",
+
+		title = { { " Tagstack ", "FloatBorder" } },
+		title_pos = "center",
 	}
 
 	-- Create the floating window
@@ -54,23 +57,22 @@ local function create_floating_window(opts)
 end
 
 local function format_item(item)
-	--return item.tagname
-
 	local bufnr = item.from[1]
 
 	local line_number = item.from[2]
-	-- vim.print(item.bufnr, line_number)
 
 	local line = ""
 	local file_info = ""
 	if vim.api.nvim_buf_is_valid(bufnr) then
 		-- The line number is from 1 in the item and not from 0 as required by nvim_buf_get_lines
 		line = vim.api.nvim_buf_get_lines(bufnr, line_number - 1, line_number, true)[1]
-		line = string.gsub(line, "^%s+", "")
+		line = string.gsub(line, "^%s+", "") -- Strip leading whitespace
+		-- TODO: If the line is long, show the part of the line where the cursor was
 
 		file_info = vim.api.nvim_buf_get_name(bufnr)
 		file_info = vim.fn.fnamemodify(file_info, ":~:.") .. ":" .. line_number
 
+		-- The window has a border around it so the available width is 2 less than the window
 		local buf_width = state.floating.opts.width - 2
 		if string.len(file_info) > (buf_width - 3) then
 			file_info = "…" .. string.sub(file_info, -buf_width + 2)
@@ -81,8 +83,6 @@ local function format_item(item)
 end
 
 local function update_buf_content(ev)
-	--vim.print(state)
-
 	if not vim.api.nvim_win_is_valid(state.floating.win) then
 		print("Window is invalid", state.floating.win)
 
