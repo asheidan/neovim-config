@@ -82,7 +82,39 @@ local function format_item(item)
 	return { " " .. line, "   " .. file_info }
 end
 
-local function update_buf_content(ev)
+-- This doesn't work since we loose the reference to the current window
+-- and therefore get the "wrong" tagstack. We should be able to bring
+-- information about which window we are in as part of the event-chain.
+-- TODO: See if it is possible to pass the window-id along to the event callback.
+-- Inspired by https://gist.github.com/runiq/31aa5c4bf00f8e0843cd267880117201
+local function debounced_update(ev)
+	local timeout_ms = 1500
+
+	if state.timer then
+		state.timer:stop()
+		if not state.timer:is_closing() then
+			state.timer:close()
+		end
+		state.timer = nil
+	end
+
+	state.timer = vim.uv.new_timer()
+	state.timer:start(timeout_ms, 0, function()
+		state.timer:stop()
+		if not state.timer:is_closing() then
+			state.timer:close()
+		end
+
+		state.timer = nil
+
+		-- The UV timer runs the function in a fast context
+		-- update_buf_content doesn't need that AND uses functions
+		-- that are not allowed in a fast context.
+		vim.schedule_wrap(require("tagstack").update_buf_content)
+	end)
+end
+
+M.update_buf_content = function(ev)
 	if not vim.api.nvim_win_is_valid(state.floating.win) then
 		print("Window is invalid", state.floating.win)
 
@@ -148,7 +180,8 @@ local function create_updatecommands()
 	vim.api.nvim_create_autocmd({ "CursorMoved" }, {
 		group = group,
 		pattern = "*",
-		callback = update_buf_content,
+		callback = M.update_buf_content,
+		--callback = debounced_update,
 	})
 end
 
@@ -160,7 +193,7 @@ M.toggle_stack_window = function()
 		create_updatecommands()
 
 		-- Populate the buffer
-		update_buf_content()
+		M.update_buf_content()
 	else
 		vim.api.nvim_win_hide(state.floating.win)
 		-- state.floating.win = -1
