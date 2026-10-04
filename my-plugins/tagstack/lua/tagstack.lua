@@ -90,27 +90,23 @@ end
 local function debounced_update(ev)
 	local timeout_ms = 1500
 
-	if state.timer then
-		state.timer:stop()
-		if not state.timer:is_closing() then
-			state.timer:close()
-		end
-		state.timer = nil
+	-- We reuse the same time by just restarting it instead of
+	-- creating a new one on each call.
+	if not state.timer then
+		state.timer = vim.uv.new_timer()
 	end
 
-	state.timer = vim.uv.new_timer()
+	--state.timer = vim.uv.new_timer()
 	state.timer:start(timeout_ms, 0, function()
 		state.timer:stop()
 		if not state.timer:is_closing() then
 			state.timer:close()
 		end
 
-		state.timer = nil
-
 		-- The UV timer runs the function in a fast context
 		-- update_buf_content doesn't need that AND uses functions
 		-- that are not allowed in a fast context.
-		vim.schedule_wrap(require("tagstack").update_buf_content)
+		pcall(vim.schedule_wrap(require("tagstack").update_buf_content))
 	end)
 end
 
@@ -127,6 +123,7 @@ M.update_buf_content = function(ev)
 		return
 	end
 
+	-- TODO: Move this to outside of update
 	local highlight_namespace = vim.api.nvim_create_namespace(AUTOGROUP_NAME)
 
 	-- Stack content
@@ -139,7 +136,6 @@ M.update_buf_content = function(ev)
 		local item_info = format_item(item)
 		vim.list_extend(lines, item_info)
 
-		-- TODO: Try to find a match for the tagname within "tagname length" from the col location in item.from.
 		local tagname_length = string.len(item.tagname)
 		local from_pos = math.max(0, item.from[1] - tagname_length)
 		local match = vim.fn.match(item_info[1], item.tagname, from_pos)
