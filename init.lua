@@ -1048,6 +1048,7 @@ require("lazy").setup({
 	{ "sonph/onehalf", lazy = true, rtp = { paths = { "vim" } } },
 	{ "tomasr/molokai", lazy = true },
 	{ "tpope/vim-vividchalk", lazy = true },
+	{ "mxngls/nvim-rustdoc", lazy = true, opts = { quiet = true, light = { tinted_backgrounds = false } } },
 	--{ 'meain/hima-vim', lazy = true },
 })
 
