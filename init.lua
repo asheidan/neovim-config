@@ -146,40 +146,6 @@ require("lazy").setup({
 	},
 
 	{
-		"NLKNguyen/papercolor-theme",
-		-- TODO: Set the cursor to magenta in an after-file
-		lazy = false,
-		priority = terminal_vim and nil or 1000,
-		-- init = function() end,
-		config = function()
-			vim.g.PaperColor_Theme_Options = {
-				language = {
-					c = { highlight_builtins = 1 },
-					cpp = { highlight_standard_library = 0 },
-				},
-				theme = {
-					default = {
-						allow_bold = vim.g.neovide and 1 or 0,
-						allow_italic = vim.g.neovide and 1 or 0,
-					},
-					-- This doesn't work in Neovide and makes no difference in terminal
-					--['default.light'] = {
-					--	override = {
-					--		cursor_fg = { '#eeeeee', '255' },
-					--		cursor_bg = { '#ff00ff', '226' },
-					--	},
-					--},
-				},
-			}
-			if not terminal_vim then
-				vim.cmd.colorscheme("PaperColor")
-				-- Workaround for ugly separator between splits
-				vim.cmd("highlight WinSeparator guifg=#005f87 guibg=#eeeeee")
-			end
-		end,
-	},
-
-	{
 		"nvim-lualine/lualine.nvim",
 		enabled = true,
 		opts = {
@@ -248,8 +214,158 @@ require("lazy").setup({
 		},
 	},
 
-	-- Feature-adding plugins
+	{
+		"folke/which-key.nvim",
+		init = function()
+			vim.opt.timeout = true
+			vim.opt.timeoutlen = 500
+		end,
+		opts = {
+			expand = 1,
+			spec = {},
+		},
+	},
 
+	{
+		"lukas-reineke/indent-blankline.nvim",
+		main = "ibl",
+		keys = {
+			{ "<leader>tg", "<cmd>IBLToggle<cr>", desc = "Toggle Indent guides" },
+		},
+		cmd = "IBLToggle",
+		---@module "ibl"
+		---@type ibl.config
+		opts = {
+			enabled = false, -- disabled since the key that loads the plugin also enables it
+			scope = {
+				enabled = true,
+				show_start = true,
+			},
+		},
+	},
+
+	-- Nvim Tree seems faster than Neotree (for now)
+	-- TODO: Check CHADTree https://github.com/ms-jpq/chadtree
+	{
+		"nvim-tree/nvim-tree.lua",
+		-- TODO: Fix highlight groups (undercurl is just bad (NvimTreeSymlink)
+		tag = "v1.18.0",
+		keys = {
+			{ "<F2>", "<CMD>NvimTreeToggle<CR>", desc = "NvimTree" },
+			{ "<S-F2>", "<CMD>NvimTreeFindFile<CR>", desc = "Find file in NvimTree" },
+			{
+				"<LEADER>ff",
+				function()
+					require("nvim-tree.api").tree.find_file({ open = true, focus = false })
+				end,
+				desc = "Find file in NvimTree",
+			},
+		},
+		cmd = { "NvimTreeOpen", "NvimTreeToggle" },
+		---@module "nvim-tree"
+		---@type nvim_tree.config
+		opts = {
+			git = {
+				enable = false,
+			},
+			view = {
+				width = { min = 25, max = 45 },
+			},
+			filters = {
+				dotfiles = true,
+			},
+			modified = { enable = true },
+			diagnostics = {
+				enable = true,
+				show_on_dirs = true,
+				show_on_open_dirs = true,
+				icons = {
+					hint = "h",
+					info = "i",
+					warning = "w",
+					error = "e",
+				},
+			},
+			renderer = {
+				add_trailing = true,
+				highlight_git = false,
+				highlight_modified = "all", -- Value can be `"none"`, `"icon"`, `"name"` or `"all"`
+				symlink_destination = false,
+				group_empty = true,
+				indent_markers = {
+					enable = true,
+					icons = {
+						edge = "│",
+						item = "├",
+						corner = "└",
+						none = " ",
+					},
+				},
+				icons = {
+					show = {
+						file = false,
+						folder = false,
+						folder_arrow = false,
+					},
+					--glyphs = {
+					--	folder = {
+					--		arrow_closed = ">",
+					--		arrow_open = "v",
+					--	},
+					--},
+					webdev_colors = false,
+				},
+			},
+		},
+	},
+	{
+		"stevearc/oil.nvim",
+		opts = {
+			default_file_explorer = true, -- Replace netrw
+		},
+	},
+
+	-- "UI"/Filemanagement }}}
+
+	-- Feature-adding plugins {{{
+
+	{ -- Integration with Zeal
+		"KabbAmine/zeavim.vim",
+		init = function()
+			vim.g.zv_disable_mapping = true
+			vim.g.zv_keep_focus = true -- Need wmctrl installed
+		end,
+		keys = {
+			{ "<leader>mK", "<Plug>Zeavim", mode = "n", desc = "Show documentation in Zeal" },
+			{ "<leader>mK", "<Plug>ZVVisSelection", mode = "v", desc = "Show documentation in Zeal" },
+		},
+	},
+
+	{
+		"jameswolensky/marker-groups.nvim",
+		-- TODO: Fix delay caused by Telescope being loaded at the same time
+		cmd = { "MarkerList", "MarkerGroupdList", "MarkerGroupsSelect" },
+		keys = {
+			{
+				"<leader>n",
+				function()
+					-- Even an empty function causes the plugin to be loaded
+					--local keycodes = vim.api.nvim_replace_termcodes("<leader>n", true, false, true)
+					--vim.api.nvim_feedkeys(keycodes, "n", false)
+				end,
+				desc = "MarkerGroups",
+			},
+		},
+		dependencies = { "nvim-lua/plenary.nvim" },
+		opts = {
+			keymaps = {
+				prefix = "<leader>n",
+			},
+			picker = "telescope",
+		},
+	},
+
+	-- - Version Controll and Diff {{{
 	{
 		"NeogitOrg/neogit", -- Git-based on magit
 		cmd = { "Neogit" },
@@ -351,7 +467,26 @@ require("lazy").setup({
 			end,
 		},
 	},
+	-- - Version Control and Diff }}}
+	-- - Editing and formatting {{{
 
+	-- Exit parenthesis { "abecodes/tabout.nvim", opts = { enable_backwards = false }, after = { "blink" } },
+	{ -- extend selecions, only mapped in visual and operator mode
+		"folke/flash.nvim",
+		event = "VeryLazy",
+		--@type Flash.Config
+		opts = {},
+		keys = {
+			{
+				"s",
+				mode = { "o", "x" },
+				function()
+					require("flash").treesitter()
+				end,
+				desc = "Remote Treesitter",
+			},
+		},
+	},
 	{ "tpope/vim-surround" },
 	{
 		"tpope/vim-commentary",
@@ -364,120 +499,102 @@ require("lazy").setup({
 		--	})
 		--end,
 	},
-
-	-- TODO: WTF is Oil.nvim?
 	{
-		"stevearc/oil.nvim",
+		"stevearc/conform.nvim",
 		opts = {
-			default_file_explorer = true, -- Replace netrw
+			formatters_by_ft = {
+				cpp = { "clang-format" },
+				lua = { "stylua" },
+				rust = { "rustfmt" },
+			},
+			format_on_save = {
+				timeout_ms = 500,
+				lsp_format = "fallback",
+			},
 		},
 	},
-
-	-- Nvim Tree seems faster than Neotree (for now)
-	-- TODO: Check CHADTree https://github.com/ms-jpq/chadtree
-	{
-		"nvim-tree/nvim-tree.lua",
-		-- TODO: Fix highlight groups (undercurl is just bad (NvimTreeSymlink)
-		tag = "v1.18.0",
+	-- - Editing and formatting }}}
+	-- - Navigation/Overview {{{
+	{ -- File structure / overview via Aerial
+		"stevearc/aerial.nvim",
+		branch = "nvim-0.9",
+		--version = "4.0.0",
+		cmd = { "AerialToggle", "AerialNavToggle" },
 		keys = {
-			{ "<F2>", "<CMD>NvimTreeToggle<CR>", desc = "NvimTree" },
-			{ "<S-F2>", "<CMD>NvimTreeFindFile<CR>", desc = "Find file in NvimTree" },
-			{
-				"<LEADER>ff",
-				function()
-					require("nvim-tree.api").tree.find_file({ open = true, focus = false })
+			{ "<F4>", "<cmd>AerialToggle!<cr>", desc = "Aerial overview" },
+
+			-- Neovide interprets Shift-F4 "correctly"
+			{ "<S-F4>", "<cmd>AerialNavToggle<cr>", desc = "Aerial navigation" },
+			-- Shift F4 is F16 in the Terminal on my macbook
+			{ "<F16>", "<cmd>AerialNavToggle<cr>", desc = "Aerial navigation" },
+		},
+		opts = {
+			backends = { "lsp", "treesitter", "markdown" },
+			layout = {
+				default_direction = "float", -- "prefer_right",
+				placement = "edge",
+				max_width = 40,
+				width = nil,
+				min_width = 15,
+				resize_to_content = true,
+			},
+			show_guides = true,
+			filter_kind = {
+				-- :help SymbolKind
+				rust = {
+					"Class",
+					"Constant",
+					"Constructor",
+					"Enum",
+					"Field",
+					"File",
+					"Function",
+					"Interface",
+					"Method",
+					"Module",
+					"Namespace",
+					"Object",
+					"Package",
+					"Property",
+					"Struct",
+					"TypeParameter",
+				},
+			},
+			float = {
+				relative = "editor",
+				override = function(configuration)
+					-- Implementation from
+					-- https://github.com/stevearc/aerial.nvim/issues/107
+					local padding = 1
+					local position = vim.api.nvim_win_get_position(0)
+					local row_index, col_index = 1, 2
+					configuration.anchor = "NE"
+					configuration.row = position[row_index] + padding
+					configuration.col = position[col_index] + vim.api.nvim_win_get_width(0) - padding
+					-- configuration.col = vim.o.columns - padding
+
+					return configuration
 				end,
-				desc = "Find file in NvimTree",
 			},
-		},
-		cmd = { "NvimTreeOpen", "NvimTreeToggle" },
-		---@module "nvim-tree"
-		---@type nvim_tree.config
-		opts = {
-			git = {
-				enable = false,
-			},
-			view = {
-				width = { min = 25, max = 45 },
-			},
-			filters = {
-				dotfiles = true,
-			},
-			modified = { enable = true },
-			diagnostics = {
-				enable = true,
-				show_on_dirs = true,
-				show_on_open_dirs = true,
-				icons = {
-					hint = "h",
-					info = "i",
-					warning = "w",
-					error = "e",
+			nav = {
+				win_opts = {
+					winblend = 0, -- No transparency
+				},
+				keymaps = {
+					["<Esc>"] = "actions.close",
+					["<C-g>"] = "actions.close",
+					["q"] = "actions.close",
 				},
 			},
-			renderer = {
-				add_trailing = true,
-				highlight_git = false,
-				highlight_modified = "all", -- Value can be `"none"`, `"icon"`, `"name"` or `"all"`
-				symlink_destination = false,
-				group_empty = true,
-				indent_markers = {
-					enable = true,
-					icons = {
-						edge = "│",
-						item = "├",
-						corner = "└",
-						none = " ",
-					},
-				},
-				icons = {
-					show = {
-						file = false,
-						folder = false,
-						folder_arrow = false,
-					},
-					--glyphs = {
-					--	folder = {
-					--		arrow_closed = ">",
-					--		arrow_open = "v",
-					--	},
-					--},
-					webdev_colors = false,
-				},
-			},
+			-- guides = {
+			-- 	mid_item = "├ ",
+			-- 	last_item = "└ ",
+			-- 	nested_top = "│ ",
+			-- 	whitespace = "  ",
+			-- },
 		},
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
 	},
-
-	{
-		"folke/which-key.nvim",
-		init = function()
-			vim.opt.timeout = true
-			vim.opt.timeoutlen = 500
-		end,
-		opts = {
-			expand = 1,
-			spec = {},
-		},
-	},
-
-	{
-		"lukas-reineke/indent-blankline.nvim",
-		main = "ibl",
-		keys = {
-			{ "<leader>tg", "<cmd>IBLToggle<cr>", desc = "Toggle Indent guides" },
-		},
-		cmd = "IBLToggle",
-		---@module "ibl"
-		---@type ibl.config
-		opts = {
-			enabled = false, -- disabled since the key that loads the plugin also enables it
-			scope = {
-				enabled = true,
-				show_start = true,
-			},
-		},
-	},
-
 	{
 		"jakemason/ouroboros",
 		dependencies = { "nvim-lua/plenary.nvim" },
@@ -500,31 +617,8 @@ require("lazy").setup({
 			},
 		},
 	},
-
-	{
-		"jameswolensky/marker-groups.nvim",
-		-- TODO: Fix delay caused by Telescope being loaded at the same time
-		cmd = { "MarkerList", "MarkerGroupdList", "MarkerGroupsSelect" },
-		keys = {
-			{
-				"<leader>n",
-				function()
-					-- Even an empty function causes the plugin to be loaded
-					--local keycodes = vim.api.nvim_replace_termcodes("<leader>n", true, false, true)
-					--vim.api.nvim_feedkeys(keycodes, "n", false)
-				end,
-				desc = "MarkerGroups",
-			},
-		},
-		dependencies = { "nvim-lua/plenary.nvim" },
-		opts = {
-			keymaps = {
-				prefix = "<leader>n",
-			},
-			picker = "telescope",
-		},
-	},
-
+	-- - Navigation/Overview }}}
+	-- - Telescope {{{
 	{
 		"nvim-telescope/telescope.nvim",
 		tag = "v0.1.9", -- v0.1.9 is released and next verified version
@@ -605,9 +699,9 @@ require("lazy").setup({
 			{ "<leader>hh", "<cmd>Telescope help_tags<cr>", desc = "Telescope helptags" },
 		},
 	},
-
-	-- LSP/Completion
-	{ -- COQ Completion
+	-- - Telescope }}}
+	-- - LSP/Syntax/Completion {{{
+	{ -- COQ Completion (Previous completion)
 		"ms-jpq/coq_nvim",
 		branch = "coq",
 		-- TODO: Hitta en commit som funkar
@@ -622,7 +716,7 @@ require("lazy").setup({
 			vim.g.coq_settings = { ["display.preview.positions"] = { east = 4, north = 3, south = nil, west = nil } }
 		end,
 	},
-	{
+	{ -- Current completion
 		"saghen/blink.cmp",
 		version = "1.*",
 		--dependencies = { 'rafamadriz/friendly-snippets' },
@@ -681,7 +775,7 @@ require("lazy").setup({
 			local lsp_configs = {
 				-- { 'bitbake_language_server' },  -- 0.0.15 is broken, 0.0.16 is not available in pypi
 				{ "clangd", {
-					cmd = { "clangd-20", "--background-index", "--clang-tidy" },
+					cmd = { "clangd", "--background-index", "--clang-tidy" },
 				} },
 				{
 					"lua_ls",
@@ -820,6 +914,21 @@ require("lazy").setup({
 			})
 		end,
 	},
+
+	{
+		"nvim-treesitter/nvim-treesitter",
+		version = "0.10.0",
+		lazy = false, -- Treesitter doesn't work with lazy load according to readme
+		build = ":TSUpdate",
+		config = function()
+			local configs = require("nvim-treesitter.configs")
+
+			configs.setup({
+				ensure_installed = { "lua", "vim", "rust", "python", "markdown" },
+			})
+		end,
+	},
+
 	{ -- Replaces folke/neodev.nvim
 		-- Placed in separate statement instead of dependency
 		-- for lspconfig to enable lazy loading.
@@ -828,26 +937,8 @@ require("lazy").setup({
 		ft = "lua",
 		opts = {},
 	},
-	{
-		"stevearc/conform.nvim",
-		opts = {
-			formatters_by_ft = {
-				cpp = { "clang-format" },
-				lua = { "stylua" },
-				rust = { "rustfmt" },
-			},
-			format_on_save = {
-				timeout_ms = 500,
-				lsp_format = "fallback",
-			},
-		},
-	},
-	--{  -- Automatically display diagnostics
-	--	-- This seems to be broken
-	--	'dgagn/diagflow.nvim',
-	--	--event = 'LspAttach',
-	--	opts = {}
-	--},
+	-- - LSP/Syntax/Completion }}}
+	-- - Debugging {{{
 	{
 		"rcarriga/nvim-dap-ui",
 		cmd = { "DapNew", "DapContinue" },
@@ -927,112 +1018,52 @@ require("lazy").setup({
 			end
 		end,
 	},
+	-- - Debugging }}}
+	-- - Broken or experiments {{{
+
+	--{  -- Automatically display diagnostics
+	--	-- This seems to be broken
+	--	'dgagn/diagflow.nvim',
+	--	--event = 'LspAttach',
+	--	opts = {}
+	--},
+
+	-- - Broken or experiments }}}
+	-- Feature-adding plugins }}}
+	-- Colorschemes {{{
 	{
-		"nvim-treesitter/nvim-treesitter",
-		version = "0.10.0",
-		lazy = false, -- Treesitter doesn't work with lazy load according to readme
-		build = ":TSUpdate",
+		"NLKNguyen/papercolor-theme",
+		-- TODO: Set the cursor to magenta in an after-file
+		lazy = false,
+		priority = terminal_vim and nil or 1000,
+		-- init = function() end,
 		config = function()
-			local configs = require("nvim-treesitter.configs")
-
-			configs.setup({
-				ensure_installed = { "lua", "vim", "rust", "python", "markdown" },
-			})
+			vim.g.PaperColor_Theme_Options = {
+				language = {
+					c = { highlight_builtins = 1 },
+					cpp = { highlight_standard_library = 0 },
+				},
+				theme = {
+					default = {
+						allow_bold = vim.g.neovide and 1 or 0,
+						allow_italic = vim.g.neovide and 1 or 0,
+					},
+					-- This doesn't work in Neovide and makes no difference in terminal
+					--['default.light'] = {
+					--	override = {
+					--		cursor_fg = { '#eeeeee', '255' },
+					--		cursor_bg = { '#ff00ff', '226' },
+					--	},
+					--},
+				},
+			}
+			if not terminal_vim then
+				vim.cmd.colorscheme("PaperColor")
+				-- Workaround for ugly separator between splits
+				vim.cmd("highlight WinSeparator guifg=#005f87 guibg=#eeeeee")
+			end
 		end,
 	},
-	{ -- File structure / overview via Aerial
-		"stevearc/aerial.nvim",
-		branch = "nvim-0.9",
-		cmd = { "AerialToggle", "AerialNavToggle" },
-		keys = {
-			{ "<F4>", "<cmd>AerialToggle!<cr>", desc = "Aerial overview" },
-
-			-- Neovide interprets Shift-F4 "correctly"
-			{ "<S-F4>", "<cmd>AerialNavToggle<cr>", desc = "Aerial navigation" },
-			-- Shift F4 is F16 in the Terminal on my macbook
-			{ "<F16>", "<cmd>AerialNavToggle<cr>", desc = "Aerial navigation" },
-		},
-		opts = {
-			backends = { "lsp", "treesitter", "markdown" },
-			layout = {
-				default_direction = "float", -- "prefer_right",
-				placement = "edge",
-				max_width = 40,
-				width = nil,
-				min_width = 15,
-				resize_to_content = true,
-			},
-			show_guides = true,
-			filter_kind = {
-				-- :help SymbolKind
-				rust = {
-					"Class",
-					"Constant",
-					"Constructor",
-					"Enum",
-					"Field",
-					"File",
-					"Function",
-					"Interface",
-					"Method",
-					"Module",
-					"Namespace",
-					"Object",
-					"Package",
-					"Property",
-					"Struct",
-					"TypeParameter",
-				},
-			},
-			float = {
-				relative = "editor",
-				override = function(configuration)
-					-- Implementation from
-					-- https://github.com/stevearc/aerial.nvim/issues/107
-					local padding = 1
-					local position = vim.api.nvim_win_get_position(0)
-					local row_index, col_index = 1, 2
-					configuration.anchor = "NE"
-					configuration.row = position[row_index] + padding
-					configuration.col = position[col_index] + vim.api.nvim_win_get_width(0) - padding
-					-- configuration.col = vim.o.columns - padding
-
-					return configuration
-				end,
-			},
-			nav = {
-				win_opts = {
-					winblend = 0, -- No transparency
-				},
-				keymaps = {
-					["<Esc>"] = "actions.close",
-					["<C-g>"] = "actions.close",
-					["q"] = "actions.close",
-				},
-			},
-			-- guides = {
-			-- 	mid_item = "├ ",
-			-- 	last_item = "└ ",
-			-- 	nested_top = "│ ",
-			-- 	whitespace = "  ",
-			-- },
-		},
-		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
-	},
-
-	{ -- Integration with Zeal
-		"KabbAmine/zeavim.vim",
-		init = function()
-			vim.g.zv_disable_mapping = true
-			vim.g.zv_keep_focus = true -- Need wmctrl installed
-		end,
-		keys = {
-			{ "<leader>mK", "<Plug>Zeavim", mode = "n", desc = "Show documentation in Zeal" },
-			{ "<leader>mK", "<Plug>ZVVisSelection", mode = "v", desc = "Show documentation in Zeal" },
-		},
-	},
-
-	-- Other colorschemes
 	{
 		"morhetz/gruvbox",
 		lazy = true,
@@ -1050,6 +1081,7 @@ require("lazy").setup({
 	{ "tpope/vim-vividchalk", lazy = true },
 	{ "mxngls/nvim-rustdoc", lazy = true, opts = { quiet = true, light = { tinted_backgrounds = false } } },
 	--{ 'meain/hima-vim', lazy = true },
+	-- Colorschemes }}}
 })
 
 -- Misc mappings
